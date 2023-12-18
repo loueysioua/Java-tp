@@ -10,18 +10,19 @@ public class Library {
     public ArrayList<LibraryBook> books;
     public ArrayList<User> users;
     public ArrayList<Admin> admins;
+    public Provider p;
 
 
-    public Library(String name, String location, String workHours) {
+    public Library(String name, String location, String workHours ,Provider p) {
         this.name = name;
         this.location = location;
         this.workHours = workHours;
+        this.p = p;
         books = new ArrayList<LibraryBook>(4);
         users = new ArrayList<User>(4);
         staffs = new ArrayList<Staff>(4);
         events = new ArrayList<Event>(4);
         admins = new ArrayList<Admin>(4);
-
     }
 
     public String getName() {
@@ -90,6 +91,41 @@ public class Library {
         return -1;
     }
 
+    public int searchBook(String title) {
+        for (int i = 0; i < books.size(); i++) {
+            if ((books.get(i)).getTitle().equalsIgnoreCase(title)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int searchUser(long userID) {
+        for (int i = 0; i < users.size(); i++) {
+            if ((users.get(i)).getUserID() == userID) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int searchStaff(long staffID) {
+        for (int i = 0; i < staffs.size(); i++) {
+            if ((staffs.get(i)).getStaffID() == staffID) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int searchEvent(long eventID) {
+        for (int i = 0; i < events.size(); i++) {
+            if ((events.get(i)).getEventID() == eventID) {
+                return i;
+            }
+        }
+        return -1;
+    }
     public void addBook(Book b) {
         LibraryBook lB = new LibraryBook(b.getTitle(), b.getAuthor(), b.getIsbn(), b.getGenre(), b.getPublicationYear(), b.getPublisher(), b.getEdition(), b.getLanguage(), b.getNbPages(), this);
         int index = searchBook(b.getIsbn());
@@ -102,6 +138,17 @@ public class Library {
         }
     }
 
+    public void addEvent(Event event) {
+        boolean v=true;
+        for (Event e : events){
+            if(e.getEventID()== event.getEventID()){
+                v=false;
+                System.out.println("Event already exists !");
+            }
+        }
+        if(v)
+            events.add(event);
+    }
     public String showUsers() {
         String uS = "------------------------------------------\n";
         if (users.isEmpty())

@@ -1,10 +1,15 @@
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Scanner;
 
 
 public abstract class User {
     public String userType = null ;
-    private static int userID=0;
+    private static long numUsers=0;
+    private long userID;
     protected String password;
     protected String username;
     public int delay;
@@ -18,7 +23,8 @@ public abstract class User {
     public User(String password,String username,String name,String adress, int phoneNum , Library L ){
         this.L = L;
         if( !( this.existsUsername(username) ) ) {
-            User.userID++;
+            numUsers++;
+            this.userID=numUsers;
             this.password = password;
             this.phoneNum = phoneNum;
             this.name = name;
@@ -35,7 +41,7 @@ public abstract class User {
         //default cstr;
     }
 //---------------getters----------------
-    public int getUserID() {
+    public long getUserID() {
         return userID;
     }
 
@@ -155,7 +161,7 @@ public abstract class User {
         return s;
     }
 
-    public void printHistory(){
+    public String showHistory(){
         String s="\nYour History is : \n\t";
         for(BorrowedBook b : historyOfUser){
             s += ( b.getTitle() + " borrowed on " + b.getBorrowDate() ) ;
@@ -165,7 +171,88 @@ public abstract class User {
             else
                 s += "\n\t" ;
         }
-        System.out.println(s);
+        return s;
+    }
+
+    public static void menuUser(User A) throws ParseException {
+        Scanner scanner = new Scanner(System.in);
+        String ans;
+        do {
+            System.out.println("------------------------User Menu------------------------");
+            System.out.println("1- Change your username .");
+            System.out.println("2- Change your password .");
+            System.out.println("3- See Library books .");
+            System.out.println("4- See info about a book from the library .");
+            System.out.println("5- Borrow a book .");
+            System.out.println("6- Return a book .");
+            System.out.println("7- See borrowed books .");
+            System.out.println("8- See activity history .");
+            System.out.println("9- See User Info .");
+            System.out.println("Please choose an option :\t");
+            ans=scanner.nextLine();
+            switch (ans){
+                case "1" :
+                    System.out.println("Please enter your new username :\t");
+                    String newUsername = scanner.nextLine();
+                    A.setPassword(newUsername);
+                    break;
+
+                case "2" :
+                    System.out.println("Please enter your new password :\t");
+                    String newPassword = scanner.nextLine();
+                    A.setPassword(newPassword);
+                    break;
+
+                case "3" :
+                    System.out.println(A.L.showBooks());
+                    break;
+
+                case "4" :
+                    System.out.println("Please enter the book's ISBN :\t");
+                    int isbn2 = scanner.nextInt();
+                    int index = A.L.searchBook(isbn2);
+                    if(index!=-1){
+                        System.out.println( A.L.books.get(index).toString() );
+                    }
+                    else
+                        System.out.println("Sorry the book doesn't exist in the library .");
+                    break;
+
+                case "5" :
+                    System.out.println("Please enter the book's title :\t");
+                    String title = scanner.nextLine();
+                    int indexBook = A.L.searchBook(title);
+                    if(indexBook !=-1){
+                        A.borrowBook( A.L.books.get(indexBook) );
+                    }
+                    else
+                        System.out.println("Sorry the book doesn't exist in the library .");
+                    break;
+
+                case "6":
+                    System.out.println("Please enter the book's title :\t");
+                    String titleReturn = scanner.nextLine();
+                    for(Book b : A.borrowedBooks){
+                        if(b.getTitle().equalsIgnoreCase(titleReturn)){
+                            A.returnBook(b);
+                            break;
+                        }
+                    }
+                    break;
+
+                case "7":
+                    System.out.println(A.showBorrowedBooksList());
+                    break;
+
+                case "8":
+                    System.out.println(A.showHistory());
+                    break;
+
+                case"9" :
+                    System.out.println(A.toString());
+                    break;
+            }
+        }while(ans.equalsIgnoreCase("NO"));
     }
 
 }

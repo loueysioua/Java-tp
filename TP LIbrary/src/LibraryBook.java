@@ -9,8 +9,6 @@ public class LibraryBook extends Book{
 
     }
 
-
-
     public int getCopies() {
         return copies;
     }

@@ -1,10 +1,12 @@
+import java.text.ParseException;
 import java.util.Locale;
 import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) {
-        Library L = new Library("Les jardins" , "Nabeul" , "24/24");
+    public static void main(String[] args) throws ParseException {
+        Provider prov = new Provider("Yamama");
+        Library L = new Library("Les jardins" , "Nabeul" , "24/24" , prov );
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter your username:\t");
         String username = scanner.nextLine();
@@ -12,8 +14,11 @@ public class Main {
         String password=scanner.nextLine();
         int userIndex= User.login(username , password , L);
         if(userIndex!=-1){
-            if (password.contains("Admin")){
+            if (password.contains("Admin") && username.contains("Admin")){
                 Admin.menuAdmin((Admin) L.users.get(userIndex));
+            }
+            else {
+                User.menuUser(L.users.get(userIndex));
             }
         }
 
