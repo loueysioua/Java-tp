@@ -35,6 +35,8 @@ public abstract class User {
             this.delay = 0;
             (L.users).add(this);
         }
+        else
+            System.out.println("Username already exists");
     }
 
     public User() {
@@ -84,10 +86,7 @@ public abstract class User {
         else
             System.out.println("Username already exists !");
     }
-//------------------to see info about the book-----------------
-    public void seeInfoAboutBook(Book b){
-        System.out.println(b.toString());
-    }
+
 //-----------to check if User Exists in Library before creating a new profile
     public boolean existsUsername(String username){
         if( L.searchUsername(username) != -1 ){
@@ -194,7 +193,7 @@ public abstract class User {
                 case "1" :
                     System.out.println("Please enter your new username :\t");
                     String newUsername = scanner.nextLine();
-                    A.setPassword(newUsername);
+                    A.setUsername(newUsername);
                     break;
 
                 case "2" :
@@ -208,9 +207,9 @@ public abstract class User {
                     break;
 
                 case "4" :
-                    System.out.println("Please enter the book's ISBN :\t");
-                    int isbn2 = scanner.nextInt();
-                    int index = A.L.searchBook(isbn2);
+                    System.out.println("Please enter the book's Title :\t");
+                    String title = scanner.nextLine();
+                    int index = A.L.searchBook(title);
                     if(index!=-1){
                         System.out.println( A.L.books.get(index).toString() );
                     }
@@ -220,8 +219,8 @@ public abstract class User {
 
                 case "5" :
                     System.out.println("Please enter the book's title :\t");
-                    String title = scanner.nextLine();
-                    int indexBook = A.L.searchBook(title);
+                    String title1 = scanner.nextLine();
+                    int indexBook = A.L.searchBook(title1);
                     if(indexBook !=-1){
                         A.borrowBook( A.L.books.get(indexBook) );
                     }
@@ -252,7 +251,9 @@ public abstract class User {
                     System.out.println(A.toString());
                     break;
             }
-        }while(ans.equalsIgnoreCase("NO"));
+            System.out.println("Would you like to continue ? (YES/No)");
+            ans = scanner.nextLine();
+        }while( !( ans.equalsIgnoreCase("NO") ) );
     }
 
 }

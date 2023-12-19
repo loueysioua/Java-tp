@@ -1,4 +1,6 @@
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Library {
     private String name;
@@ -149,6 +151,93 @@ public class Library {
         if(v)
             events.add(event);
     }
+
+    public void addStaff(Staff staff) {
+        boolean v=true;
+        for (Staff s : staffs){
+            if(s.getStaffID()== staff.getStaffID()){
+                v=false;
+                System.out.println("Staff already exists !");
+            }
+        }
+        if(v)
+            staffs.add(staff);
+    }
+
+    public void addAdmins(){
+        System.out.println("Full name :\t");
+        Scanner sc = new Scanner(System.in);
+        String name=sc.nextLine();
+        System.out.println("Username :\t");
+        String username=sc.nextLine();
+        boolean v=true;
+        for (Admin a : admins){
+            if(a.getUsername().equals(username)){
+                v=false;
+                System.out.println("Username already exists !");
+            }
+        }
+        if(v){
+            System.out.println("Password :\t");
+            String password=sc.nextLine();
+            System.out.println("Phone Number :\t");
+            int pNum= sc.nextInt();
+            sc.nextLine();
+            System.out.println("Adress :\t");
+            String adress=sc.nextLine();
+            Admin a = new Admin(password , username , name , adress , pNum , this);
+        }
+    }
+
+    public void subscribeInTheLibrary(){
+        System.out.println("Full name :\t");
+        Scanner sc = new Scanner(System.in);
+        String name=sc.nextLine();
+        System.out.println("Username :\t");
+        String username=sc.nextLine();
+        boolean v=true;
+        for (User user : users){
+            if(user.getUsername().equals(username)){
+                v=false;
+                System.out.println("Username already exists !");
+            }
+        }
+        if(v){
+            System.out.println("Password :\t");
+            String password=sc.nextLine();
+            System.out.println("Phone Number :\t");
+            int pNum= sc.nextInt();
+            sc.nextLine();
+            System.out.println("Adress :\t");
+            String adress=sc.nextLine();
+            System.out.println("What type of user ?(Prenium/Free) :\t");
+            String type=sc.nextLine();
+            if( type.equalsIgnoreCase("Prenium")) {
+                PreniumUser u = new PreniumUser(password , username , name , adress , pNum , this);
+            }
+            else {
+                FreeUser u = new FreeUser(password , username , name , adress , pNum , this);
+            }
+        }
+    }
+
+    public void loginToLibrary() throws ParseException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter your username:\t");
+        String username = scanner.nextLine();
+        System.out.print("Enter your password:\t");
+        String password=scanner.nextLine();
+        int userIndex= User.login(username , password , this);
+        if(userIndex!=-1){
+            if (password.contains("Admin") && username.contains("Admin")){
+                Admin.menuAdmin( (Admin)( this.users.get(userIndex) ) );
+            }
+            else {
+                User.menuUser(users.get(userIndex));
+            }
+        }
+    }
+
     public String showUsers() {
         String uS = "------------------------------------------\n";
         if (users.isEmpty())
@@ -182,7 +271,7 @@ public class Library {
         else {
             eS += "here is a list of '" + this.name + "' library events :\n";
             for (Event e : events) {
-                eS += (e.getName() + " |");
+                eS += (e.getName() + " (" + e.getStatus() + ") |");
             }
         }
         return eS;
@@ -199,6 +288,19 @@ public class Library {
             }
         }
         return sS;
+    }
+
+    public String showAdmins(){
+        String aS = "------------------------------------------\n";
+        if (admins.isEmpty())
+            aS += "There are still no users ";
+        else {
+            aS += "here is a list of '" + this.name + "' library users :\n";
+            for (Admin u : admins) {
+                aS += ("\t- " + u.getUsername() + "\n");
+            }
+        }
+        return (aS);
     }
 
 
