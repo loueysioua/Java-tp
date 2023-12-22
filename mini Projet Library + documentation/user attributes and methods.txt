@@ -1,0 +1,174 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+User :
+	attributes :
+		id(static ++ when new user added)  
+		password  
+		username 
+		name 
+		delay(initialised to 0)  
+		userType(Free/Prenium/Admin)  
+		adress  
+		phone number  
+		borrowedBooks(array of BorrowedBooks)  
+		Library  
+		historyofborrowedbooks(array of all books borrowed and returned)
+	
+	methods :
+		getters + setters	  
+		cstr with parameters (checks if username exists if not then it'll add the user to the library) 
+		cstr without parameters
+		exists method to check if user already exists in the library before creating a new one
+		login method to log an existant user in the library
+		borrowBook(book b) : b.copies-- / set the deadline , the borrowel date of the borrowed book (abstract method in user because every type of user has specific perks)
+		returnBook(book b) : b.copies++ / date of return (if > end borrowl retard++)
+		toString ( to get the user's info )
+		listofborrowedbooks method (returns a string)
+		detailed history method (returns a string)
+		
+	
+Free User extends User:
+	nb max of books he can borrow (3)
+	cant get first editions of books
+	more limited Deadline than prenium
+	less retard chances(5)
+
+Prenium User extends User:
+	deadlines are less tight than free user
+	can get any addition of a book
+	no limits to borrows 
+	limit on retard to 7
+
+Admin extends PreniumUser :
+	has a unique ID of admin (AdminID)
+	constructor adds the new admin automatically to the admin list in his library
+	has access to everything and can modify anything in the system
+	his password is special (the system adds automatically "Admin" + AdminID once instantiated for login and better security)
+	his username is special too (the system adds automatically "Admin" to the end of the username of the admin once instantiated)
+	addBookFromProvider method (because only admins can add books to the library)
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+Book :
+	attributes :
+		title 
+		author
+		book's ISBN (a unique identifier)
+		genre 
+		publicationYear 
+		publisher
+		edition
+		language
+		nbPages
+	methods :
+		constructor with and without parameters
+		getters+setters
+		toString ( to get info about the book ) 
+
+BorrowedBook extends Book :
+	specific attributes :
+		borrowDate 
+		returnDate
+		returnDeadLine
+	
+	methods :
+		constructor ( + initialzes the borrow date to the date of borrow + initializes the deadline to 10days after the borrow date )
+		getters and setters for the dates
+		override of toString ( added the dates ) 
+
+LibraryBook extends Book : ( for the books inside the library )
+	specific attributes :
+		copies and library 
+	methods :
+		constructor ( initializes copies to 0 and the library )
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+
+
+Library :
+	attributes :
+		name
+		location
+		libraryID
+		workHours
+		staffs	(array of the staff in the library)
+		events	(array of the events in the library)
+		books	(array of the books in the library)
+		users	(array of the users in the library)
+		admins	(array of the admins in the library)
+		provider ( the admin will add books from this provider )
+	methods :
+		constructor with parameters
+		getters + setters
+		toString method ( info about the library ) 
+		searchUsername by username method
+		searchUsername by userID method
+		searchBook by ISBN method
+		searchBook by Title method
+		searchStaff method
+		searchEvent method
+		addBook ( adds a book to the livrary if the book isbn exists then the adds it as a copy of the book that exists else it adds the book and initializes its copies to 1 )
+		addEvent ( adds a new event to the library )
+		addStaff ( adds a new staff to the library )
+		addAdmins
+		subscribeInTheLibrary ( adds a new user to the library )
+		loginToLibrary method
+		showUsers (returns all users in the library)
+		showEvents (returns all events in the library)
+		showStaff (returns all staff in the library)
+		showBooks (returns all books in the library)
+		showAdmins (returns all admins in the library)
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+Provider :
+	attributes :
+		booksToProvide (an array of all books that the provider will give to the library)
+		stock (and array of the books the provider has and didn't add to the books to provide )
+		name
+		ID
+	methods 
+		cnstructor with and without parameters 
+		getter and setter for name
+		addBookToStock method
+		addBooksToProvide method (adds books to the provide list)
+		showStock method (returns a string of the stock books)
+		showBooksToProvide (returns a string of the books to provide)
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+Staff :
+	attributes :
+		fullName 
+		job
+		staffID
+		salary (float)
+		status (if in vacation or working or done working .... )
+		library (where he works)
+	methods :
+		constructor with and without parameters
+		getters and setters
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+Event :
+	attributes :
+		eventDate 
+		name 
+		topic
+		features
+		ID
+		description
+		status (finished / ongoing / soon ....)
+	methods :
+		constructor with and without parameters
+		getters + setters 
