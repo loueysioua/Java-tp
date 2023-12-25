@@ -12,8 +12,16 @@ public class Main {
         productManager.addProduct(gamingProduct);
         productManager.addProduct(animeMerchProduct);
         productManager.addProduct(seriesMerchProduct);
-        productManager.printAllProducts();
-        productManager.updateProduct("123", electronicProduct.getClass());
-        productManager.printProductDetails("123",electronicProduct.getClass());
+        productManager.addProduct(homeDecoProduct);
+        UserCart userCart = new UserCart(productManager);
+        userCart.addProductToCart("456", 8);
+        userCart.addProductToCart("113", 1);
+        userCart.removeProductFromCart("456", 1);
+        userCart.removeProductFromCart("113", 1);
+        userCart.removeProductFromCart("113", 1);
+        userCart.displayCart();
+        productManager.printAllProductsOfACategory(HomeDecoProduct.class);
+        productManager.handleLowStockProducts(5);
+        productManager.filterByDynamicFilters();
     }
 }
