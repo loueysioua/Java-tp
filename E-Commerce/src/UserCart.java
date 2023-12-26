@@ -5,12 +5,14 @@ public class UserCart {
     private ProductManager productManager;
     private double totalAmount;
     private double discountAmount;
+    private double discountPercentage;
     private double payableAmount;
     private double shippingCost;
 
     public UserCart(ProductManager productManager){
         cart = new HashMap<>();
         this.productManager = productManager;
+        discountPercentage=0;
         totalAmount = 0;
         discountAmount = 0;
         payableAmount = 0;
@@ -31,6 +33,14 @@ public class UserCart {
 
     public void setDiscountAmount(double discountAmount) {
         this.discountAmount = discountAmount;
+    }
+
+    public double getDiscountPercentage() {
+        return discountPercentage;
+    }
+
+    public void setDiscountPercentage(double discountPercentage) {
+        this.discountPercentage = discountPercentage;
     }
 
     public double getPayableAmount() {
@@ -64,17 +74,23 @@ public class UserCart {
         }
     }
 
+    public void calculateTotalAmount(){
+        totalAmount = 0;
+        for(String productID : cart.keySet()){
+            Product product = productManager.findProduct(productID);
+            totalAmount += product.getPrice() * cart.get(productID);
+        }
+    }
+
     public void addProductToCart(String productID , int quantity) {
         Product product = productManager.findProduct(productID);
         if(product != null) {
             if (product.getQuantityInStock() >= quantity && quantity > 0) {
                 //if product is already in cart, add the quantity to the existing quantity else add the product to cart
                 cart.put(productID, cart.getOrDefault(productID, 0) + quantity);
-                totalAmount += product.getPrice() * quantity;
                 product.setQuantityInStock(product.getQuantityInStock() - quantity);
                 System.out.println("Product added to cart successfully");
                 calculateShippingCost();
-                payableAmount= totalAmount - discountAmount + shippingCost;
             }
             else if(quantity <= 0){
                 System.out.println("Product not added to cart. Invalid quantity");
@@ -88,6 +104,13 @@ public class UserCart {
         }
     }
 
+
+    public void calculatePayableAmount(){
+        //calculate with the discount percentage
+        payableAmount = totalAmount - (totalAmount * discountPercentage / 100) + shippingCost- discountAmount;
+    }
+
+
     public void removeProductFromCart(String productID , int quantity) {
         if (cart.containsKey(productID)){
             int currentQuantity = cart.get(productID);
@@ -95,19 +118,14 @@ public class UserCart {
                 cart.remove(productID);
                 Product product = productManager.findProduct(productID);
                 product.setQuantityInStock(product.getQuantityInStock() + currentQuantity);
-                totalAmount -= product.getPrice() * currentQuantity;
                 System.out.println("Product removed from cart successfully");
-                calculateShippingCost();
-                payableAmount= totalAmount - discountAmount + shippingCost;
             }
             else if (quantity > 0){
                 cart.put(productID, currentQuantity - quantity);
                 Product product = productManager.findProduct(productID);
                 product.setQuantityInStock(product.getQuantityInStock() + quantity);
-                totalAmount -= product.getPrice() * quantity;
                 System.out.println("Product removed from cart successfully");
                 calculateShippingCost();
-                payableAmount= totalAmount - discountAmount + shippingCost;
             }
             else {
                 System.out.println("Product not removed from cart. Invalid quantity");
@@ -118,6 +136,7 @@ public class UserCart {
         }
     }
 
+
     public void displayCart(){
         System.out.println("---------------------------------Displaying Cart----------------------------------");
         calculateShippingCost();
@@ -125,13 +144,20 @@ public class UserCart {
         //iterate through the cart and display the product ID , name and quantity
         for(String productID : cart.keySet()){
             Product product = productManager.findProduct(productID);
-            System.out.printf("\n\t%-15s:\t%-25s:\t%-10d:\t%-10.2f", productID, product.getName(), cart.get(productID), product.getPrice());
+            System.out.printf("\n\t%-15s:\t%-25s:\t%-10d:\t%-10.2f$", productID, product.getName(), cart.get(productID), product.getPrice());
         }
         System.out.print("}\n------------------------------------------");
+        calculateTotalAmount();
+        calculateShippingCost();
+        calculatePayableAmount();
         System.out.println("\nTotal Amount: "+totalAmount+"$");
         System.out.println("Discount Amount: "+discountAmount+"$");
         System.out.println("Shipping Cost: "+shippingCost+"$");
         System.out.println("Payable Amount: "+payableAmount+"$");
         System.out.println("------------------------------------------------------------------------------------");
+    }
+
+    public void clearCart(){
+        cart.clear();
     }
 }

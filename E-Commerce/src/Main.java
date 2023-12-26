@@ -7,21 +7,25 @@ public class Main {
         SeriesMerchProduct seriesMerchProduct = new SeriesMerchProduct("112", "Figure", "Figure", 100, 10, "Bandai", "GameOfThrones", "Action", "Figure", "10x10", "Plastic");
         HomeDecoProduct homeDecoProduct = new HomeDecoProduct("113", "Table", "Table", 100, 10, "IKEA", "Wood", "Table", "Brown", "10kg", "Modern", "Living Room", "100x100x100");
         ProductManager productManager = new ProductManager();
-        productManager.addProduct(electronicProduct);
-        productManager.addProduct(clothingProduct);
-        productManager.addProduct(gamingProduct);
-        productManager.addProduct(animeMerchProduct);
-        productManager.addProduct(seriesMerchProduct);
-        productManager.addProduct(homeDecoProduct);
-        UserCart userCart = new UserCart(productManager);
-        userCart.addProductToCart("456", 8);
-        userCart.addProductToCart("113", 1);
-        userCart.removeProductFromCart("456", 1);
-        userCart.removeProductFromCart("113", 1);
-        userCart.removeProductFromCart("113", 1);
-        userCart.displayCart();
-        productManager.printAllProductsOfACategory(HomeDecoProduct.class);
-        productManager.handleLowStockProducts(5);
-        productManager.filterByDynamicFilters();
+        AuthentificationSystem authentificationSystem = new AuthentificationSystem();
+        Admin admin = new Admin(productManager,"Alex" , "Nero xD" , "ojqhdo@gmail.com" , "123456789" , "26565656565", authentificationSystem);
+        admin.addProduct(gamingProduct);
+        admin.addProduct(clothingProduct);
+        admin.addProduct(electronicProduct);
+        admin.addProduct(animeMerchProduct);
+        admin.addProduct(seriesMerchProduct);
+        admin.addProduct(homeDecoProduct);
+        User user = new User(productManager, "Alex", "Nero xD", "qsdlj@gmail.com", "123456789", "26565656565","6856556295");
+        user.addToCart("123", 1);
+        user.addToCart("456", 9);
+        user.addToCart("789", 1);
+        user.addToCart("101", 15);
+        user.addToCart("112", 1);
+        user.addToCart("113", 1);
+        user.viewCart();
+        user.removeFromCart("123", 1);
+        user.viewCart();
+        user.checkout();
+
     }
 }

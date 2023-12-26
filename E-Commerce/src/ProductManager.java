@@ -58,29 +58,32 @@ public class ProductManager {
         System.out.println("------------------------------------------------------------------------------------");
     }
 
-    public void printProductDetails(String productId, Class<? extends Product> productClass) {
-        HashMap <String, Product> productMap = categoryProductMap.get(productClass);
-        if (productMap !=null ) {
-            Product product = productMap.get(productId);
-            if (product != null) {
-                System.out.println(product);
+    public void printProductDetails(String productId) {
+        Product productToBeFound = findProduct(productId);
+        if(productToBeFound!=null) {
+            Class<? extends Product> productClass = productToBeFound.getClass();
+            HashMap<String, Product> productMap = categoryProductMap.get(productClass);
+            if (productMap != null) {
+                Product product = productMap.get(productId);
+                if (product != null) {
+                    System.out.println(product);
+                } else {
+                    System.out.println("Product not found in the category:" + productClass.getSimpleName() + "\n");
+                }
             } else {
-                System.out.println("Product not found in the category:"+ productClass.getSimpleName() +"\n");
+                System.out.println(productClass.getSimpleName() + " category doesn't exist\n");
             }
-        }
-        else{
-            System.out.println(productClass.getSimpleName() + " category doesn't exist\n");
         }
     }
 
     public void printAllProducts() {
-        System.out.println("All products:\n");
+        System.out.println("--------------------------All products-----------------------");
         for (HashMap<String, Product> productMap : categoryProductMap.values()) {
             Iterator<Product> it = productMap.values().iterator();
             if(it.hasNext()) {
-                System.out.println("Products in the category: " + it.next().getClass().getSimpleName() + "\n\tProduct ID \t|\tProduct Name");
+                System.out.println("Products in the category: " + it.next().getClass().getSimpleName() + "\n\tProduct ID \t|\tProduct Name \t|\tProduct stock \t|\tProduct price");
                 for (Product product : productMap.values()) {
-                    System.out.println(" -\t " + product.getProductId() + "\t\t:\t\t" + product.getName() +"\t\t:\t\t"+product.getQuantityInStock()+ "\n\t");
+                    System.out.println(" -\t " + product.getProductId() + "\t\t:\t\t" + product.getName() +"\t\t:\t\t"+product.getQuantityInStock()+ "\t\t:\t\t"+product.getPrice()+"$");
                 }
             }
         }
@@ -126,21 +129,25 @@ public class ProductManager {
                         System.out.println("Enter the new name: ");
                         input = sc.nextLine();
                         product.setName(input);
+                        System.out.println("Product name updated successfully");
                         break;
                     case "Price":
                         System.out.println("Enter the new price: ");
                         input = sc.nextLine();
                         product.setPrice(Float.parseFloat(input));
+                        System.out.println("Product price updated successfully");
                         break;
                     case "Quantity":
                         System.out.println("Enter the new quantity in stock: ");
                         input = sc.nextLine();
                         product.setQuantityInStock(Integer.parseInt(input));
+                        System.out.println("Product quantity updated successfully");
                         break;
                     case "Description":
                         System.out.println("Enter the new description: ");
                         input = sc.nextLine();
                         product.setDescription(input);
+                        System.out.println("Product description updated successfully");
                         break;
                     default:
                         System.out.println("Invalid input");
@@ -179,7 +186,7 @@ public class ProductManager {
         System.out.println("------------------------------------------------------------------------------------");
     }
 
-    public void putOnSaleAProduct(String productId, int discount) {
+    public void putOnSaleAProduct(String productId, float discount) {
         Product product = findProduct(productId);
         if (product != null) {
             product.setPrice(product.getPrice() * (100 - discount) / 100);
@@ -190,7 +197,7 @@ public class ProductManager {
         }
     }
 
-    public void putOnSaleACategory(Class<? extends Product> productClass, int discount) {
+    public void putOnSaleACategory(Class<? extends Product> productClass, float discount) {
         HashMap <String, Product> productMap = categoryProductMap.get(productClass);
         if (productMap !=null ) {
             for (Product product : productMap.values()) {
@@ -203,7 +210,7 @@ public class ProductManager {
         }
     }
 
-    public void putOnSaleAllProducts(int discount) {
+    public void putOnSaleAllProducts(float discount) {
         for (HashMap<String, Product> productMap : categoryProductMap.values()) {
             for (Product product : productMap.values()) {
                 product.setPrice(product.getPrice() * (100 - discount) / 100);
@@ -212,17 +219,98 @@ public class ProductManager {
         System.out.println("All products are now on sale with a discount of " + discount + "%");
     }
 
-    //search for a product by a term in its name returns a list of products
-    public ArrayList<Product> searchByTermInName(String search) {
+    //search for a product by a term in its name or in its description User can filter the results by price range / quantity range / category
+    public void searchByTermInNameAndDescription(String search) {
         ArrayList<Product> products = new ArrayList<>();
         for (HashMap<String, Product> productMap : categoryProductMap.values()) {
             for (Product product : productMap.values()) {
-                if (product.getName().contains(search)) {
+                if (product.getName().contains(search) || product.getDescription().contains(search)) {
                     products.add(product);
                 }
             }
         }
-        return products;
+        System.out.println("---------------Displaying Products------------------");
+        System.out.println("Products that contain the term: " + search + "\n\tProduct ID \t|\tProduct Name\t|\tProduct Price\t|\tProduct Quantity");
+        for (Product product : products) {
+            System.out.println(" -\t " + product.getProductId() + "\t\t:\t\t" + product.getName() + "\t\t:\t\t" + product.getPrice() + "\t\t:\t\t" + product.getQuantityInStock());
+        }
+        //choice to filter : price range / quantity range / category
+        System.out.println("Do you want to filter the results ? : (Yes / No) ");
+        Scanner sc = new Scanner(System.in);
+        String input = sc.nextLine();
+        if (input.equalsIgnoreCase("YES")) {
+            System.out.println("Do you want to filter by Price ? : (Yes / No) ");
+            input = sc.nextLine();
+            //filter by price
+            if (input.equalsIgnoreCase("YES")){
+                System.out.println("Enter the min price: ");
+                float minPrice = Float.parseFloat(sc.nextLine());
+                System.out.println("Enter the max price: ");
+                float maxPrice = Float.parseFloat(sc.nextLine());
+                if (minPrice>=0 && maxPrice>=0) {
+                    if (minPrice > maxPrice) {
+                        float aux = minPrice;
+                        minPrice = maxPrice;
+                        maxPrice = aux;
+                    }
+                    for (Product product : products) {
+                        if (product.getPrice() < minPrice || product.getPrice() > maxPrice) {
+                            products.remove(product);
+                        }
+                    }
+                }
+                else{
+                    System.out.println("Invalid Prices");
+                }
+            }
+            System.out.println("Do you want to filter by Quantity ? : (Yes / No) ");
+            input = sc.nextLine();
+            //filter by quantity
+            if (input.equalsIgnoreCase("YES")){
+                System.out.println("Enter the min quantity: ");
+                int minQuantity = Integer.parseInt(sc.nextLine());
+                System.out.println("Enter the max quantity: ");
+                int maxQuantity = Integer.parseInt(sc.nextLine());
+                if(minQuantity>=0 && maxQuantity>=0){
+                    if (minQuantity>maxQuantity){
+                        int aux = minQuantity;
+                        minQuantity = maxQuantity;
+                        maxQuantity = aux;
+                    }
+                    for (Product product : products) {
+                        if (product.getQuantityInStock() < minQuantity || product.getQuantityInStock() > maxQuantity) {
+                            products.remove(product);
+                        }
+                    }
+                }
+                else{
+                    System.out.println("Invalid Quantities");
+                }
+            }
+            System.out.println("Do you want to filter by Category ? : (Yes / No) ");
+            input = sc.nextLine();
+            //filter by category
+            if (input.equalsIgnoreCase("YES")){
+                System.out.println("Enter the category: ");
+                input = sc.nextLine();
+                Class<? extends Product> productClass = switch (input) {
+                    case "ElectronicProduct" -> ElectronicProduct.class;
+                    case "ClothingProduct" -> ClothingProduct.class;
+                    case "GamingProduct" -> GamingProduct.class;
+                    case "AnimeMerchProduct" -> AnimeMerchProduct.class;
+                    case "SeriesMerchProduct" -> SeriesMerchProduct.class;
+                    case "HomeDecoProduct" -> HomeDecoProduct.class;
+                    default -> null;
+                };
+                products.removeIf(product -> product.getClass() != productClass);
+            }
+            System.out.println("---------------Displaying Products by filters you chose------------------");
+            System.out.println("Products that contain the term: " + search + "\n\tProduct ID \t|\tProduct Name\t|\tProduct Price\t|\tProduct Quantity");
+            for (Product product : products) {
+                System.out.println(" -\t " + product.getProductId() + "\t\t:\t\t" + product.getName() + "\t\t:\t\t" + product.getPrice() + "\t\t:\t\t" + product.getQuantityInStock() + "\n\t");
+            }
+            System.out.println("------------------------------------------------------------------------------------");
+        }
     }
 
     //search for products in a range of prices returns a list of products
@@ -281,7 +369,7 @@ public class ProductManager {
         return products;
     }
 
-    //filter products with dynamic filters
+    //filter products with dynamic filters (my biggest challenge in this project)
     public void filterByDynamicFilters() {
         Scanner sc = new Scanner(System.in);
         String input;
@@ -662,4 +750,19 @@ public class ProductManager {
                 }
         }
     }
+
+    //filer products by Brand
+    public ArrayList<Product> filterByBrand(String brand) {
+        ArrayList<Product> products = new ArrayList<>();
+        for (HashMap<String, Product> productMap : categoryProductMap.values()) {
+            for (Product product : productMap.values()) {
+                if(product.getBrand().equalsIgnoreCase(brand)){
+                    products.add(product);
+                }
+            }
+        }
+        return products;
+    }
+
+
 }
