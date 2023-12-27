@@ -492,7 +492,7 @@ public class Admin {
 
                     case 23:
                         authentificationSystem.login(email, password);
-                        //display the user menu(it's not static) :
+                        //display the user menu:
                         authentificationSystem.getUsers().get(email).userMenu();
                         break;
 

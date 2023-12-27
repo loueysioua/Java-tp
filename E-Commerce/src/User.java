@@ -1,7 +1,9 @@
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class User {
-    //TODO: add order list
+    private HashMap<String , CouponsAndDicountCodes> couponsAndDicountCodesUsed;
+    private HashMap<String, Order> orders;
     private UserCart cart ;
     private String name;
     private String username;
@@ -18,6 +20,7 @@ public class User {
         this.password = password;
         this.address = address;
         this.phoneNumber = phoneNumber;
+        this.orders = new HashMap<>();
     }
 
     public String getName() {
@@ -82,6 +85,26 @@ public class User {
 
     public void checkout(){
         System.out.println("------------------Your cart:------------------");
+        //User may enter discount codes if he has
+        System.out.println("Do you have a discount code? (Y/N)");
+        Scanner scanner1 = new Scanner(System.in);
+        String choice1 = scanner1.next();
+        if(choice1.equalsIgnoreCase("Y")){
+            System.out.println("Enter your discount code:");
+            Scanner scanner2 = new Scanner(System.in);
+            String code = scanner2.next();
+            if(CouponsAndDicountCodes.codes.containsKey(code)){
+                CouponsAndDicountCodes coupon = couponsAndDicountCodesUsed.get(code);
+                cart.setDiscountPercentage(coupon.getDiscountPercentage());
+                cart.setDiscountAmount(coupon.getDiscountAmount());
+                cart.calculatePayableAmount();
+                System.out.println("Discount code applied successfully");
+            }
+            else{
+                System.out.println("Invalid discount code");
+            }
+        }
+        //calculate the total amount, shipping cost, discount amount, discount percentage, and payable amount and proceed with payment
         cart.calculateShippingCost();
         cart.calculateTotalAmount();
         cart.calculatePayableAmount();
@@ -114,6 +137,11 @@ public class User {
                 String cvv = scanner.next();
                 PaymentStrat creditCardPayment = new CreditCardPayment(cardNumber, cardHolderName, expiryDate, cvv);
                 creditCardPayment.pay(payableAmount);
+                //create a new Order and add it to the order list of the user
+                Order orderCase1 = new Order(username, cart);
+                orders.put(orderCase1.getOrderID(), orderCase1);
+                cart.clearCart();
+                System.out.println("Thank you for shopping with us "+ name+" ! "+ "Your order will be delivered to "+ address+" in 3 days");
                 break;
             case 2:
                 System.out.println("Enter your username:");
@@ -124,6 +152,11 @@ public class User {
                 int _8DigitPassword = scanner.nextInt();
                 PaymentStrat e_dinarPayment = new E_dinarPayment(username, _4DigitPassword, _8DigitPassword);
                 e_dinarPayment.pay(payableAmount);
+                //create a new Order and add it to the order list of the user
+                Order orderCase2 = new Order(username, cart);
+                orders.put(orderCase2.getOrderID(), orderCase2);
+                cart.clearCart();
+                System.out.println("Thank you for shopping with us "+ name+" ! "+ "Your order will be delivered to "+ address+" in 3 days");
                 break;
             case 3:
                 System.out.println("Enter your username:");
@@ -134,13 +167,25 @@ public class User {
                 cardNumber = scanner.next();
                 PaymentStrat ourCardPayment = new OurCardPayment(username, password , cardNumber);
                 ourCardPayment.pay(payableAmount);
+                //create a new Order and add it to the order list of the user
+                Order orderCase3 = new Order(username, cart);
+                orders.put(orderCase3.getOrderID(), orderCase3);
+                cart.clearCart();
+                System.out.println("Thank you for shopping with us "+ name+" ! "+ "Your order will be delivered to "+ address+" in 3 days");
                 break;
             default:
                 System.out.println("Invalid choice");
         }
-        cart.clearCart();
-        System.out.println("Thank you for shopping with us "+ name+" ! "+ "Your order will be delivered to "+ address+" in 3 days");
-        //after payment need to create a new Order and add it to the order list of the user
+
+    }
+
+    //view order History
+    public void viewOrderHistory(){
+        System.out.println("------------------Your order History:------------------");
+        for(String orderID : orders.keySet()){
+            System.out.println("- "+orders.get(orderID));
+        }
+        System.out.println("--------------------------------------------------------");
     }
 
     //need to add orders before doing the menu

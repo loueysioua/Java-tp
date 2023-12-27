@@ -59,6 +59,14 @@ public class UserCart {
         this.shippingCost = shippingCost;
     }
 
+    public HashMap<String, Integer> getCart() {
+        return cart;
+    }
+
+    public void setCart(HashMap<String, Integer> cart) {
+        this.cart = cart;
+    }
+
     public void calculateShippingCost(){
         if(totalAmount > 400){
             setShippingCost(0);

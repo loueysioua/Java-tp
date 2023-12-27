@@ -26,6 +26,7 @@ public class Main {
         user.removeFromCart("123", 1);
         user.viewCart();
         user.checkout();
+        user.viewOrderHistory();
 
     }
 }
