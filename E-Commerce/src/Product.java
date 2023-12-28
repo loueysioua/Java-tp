@@ -1,4 +1,9 @@
+import java.util.ArrayList;
+
 public abstract class Product {
+    //a list of reviews and feedbacks :
+    public ArrayList<Review> reviews;
+    private float rating;
     private String productId;
     private String name;
     private String description;
@@ -15,7 +20,7 @@ public abstract class Product {
         this.description = description;
         this.price = price;
         this.quantityInStock = quantityInStock;
-
+        this.reviews = new ArrayList<>();
         this.brand = brand;
     }
 
@@ -71,6 +76,39 @@ public abstract class Product {
         this.brand = brand;
     }
 
+    //add a review to the list of reviews
+    public void addReview(Review review){
+        reviews.add(review);
+    }
+
+    //remove a review from the list of reviews
+    public void removeReview(String username){
+        for (Review review : reviews) {
+            if(review.getUsername().equals(username)){
+                reviews.remove(review);
+                break;
+            }
+        }
+    }
+
+    //calculate the average rating of the product
+    public float calculateRating() {
+        float sum = 0;
+        for (Review review : reviews) {
+            sum += review.getRating();
+        }
+        rating = sum / reviews.size();
+        return rating;
+    }
+
+    //display the list of reviews
+    public void displayReviews(){
+        calculateRating();
+        System.out.println("Rating : "+rating);
+        for (Review review : reviews) {
+            System.out.println(review.toString());
+        }
+    }
     @Override
     public String toString() {
         return "Product of ID "+productId+ " :\n\t"+
@@ -78,7 +116,8 @@ public abstract class Product {
                 "Description: "+description+"\n\t"+
                 "Price: "+price+"$\n\t"+
                 "Quantity in stock: "+quantityInStock+"\n\t"+
-                "Brand: "+brand+"\n\t";
+                "Brand: "+brand+"\n\t"+
+                "Rating: "+rating+"\n\t";
     }
 
 }

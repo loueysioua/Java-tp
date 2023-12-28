@@ -55,7 +55,7 @@ public class CouponsAndDicountCodes {
     }
 
     //admins may add codes to the list
-    private static void addCode(String code){
+    public static void addCode(String code){
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the type of the code :");
         System.out.println("1- Percentage");

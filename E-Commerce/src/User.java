@@ -1,7 +1,10 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class User {
+    private AuthentificationSystem authentificationSystem;
+    private ArrayList<Review> reviews;
     private HashMap<String , CouponsAndDicountCodes> couponsAndDicountCodesUsed;
     private HashMap<String, Order> orders;
     private UserCart cart ;
@@ -12,7 +15,12 @@ public class User {
     private String address;
     private String phoneNumber;
 
-    public User( ProductManager productManager,String name, String username, String email, String password, String address , String phoneNumber) {
+    private ProductManager productManager;
+
+    public User( AuthentificationSystem authentificationSystem,ProductManager productManager,String name, String username, String email, String password, String address , String phoneNumber) {
+        this.authentificationSystem = authentificationSystem;
+        this.productManager = productManager;
+        this.couponsAndDicountCodesUsed = new HashMap<>();
         this.cart = new UserCart(productManager);
         this.name = name;
         this.username = username;
@@ -21,6 +29,8 @@ public class User {
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.orders = new HashMap<>();
+        this.reviews = new ArrayList<>();
+        this.authentificationSystem.registerUser(this);
     }
 
     public String getName() {
@@ -83,6 +93,17 @@ public class User {
         cart.displayCart();
     }
 
+    @Override
+    public String toString() {
+        return "User :\n\t"+
+                "-Name : "+name+"\n\t"+
+                "-Username : "+username+"\n\t"+
+                "-Email : "+email+"\n\t"+
+                "-Password : "+password+"\n\t"+
+                "-Address : "+address+"\n\t"+
+                "-Phone Number : "+phoneNumber+"\n";
+    }
+
     public void checkout(){
         System.out.println("------------------Your cart:------------------");
         //User may enter discount codes if he has
@@ -94,9 +115,8 @@ public class User {
             Scanner scanner2 = new Scanner(System.in);
             String code = scanner2.next();
             if(CouponsAndDicountCodes.codes.containsKey(code)){
-                CouponsAndDicountCodes coupon = couponsAndDicountCodesUsed.get(code);
-                cart.setDiscountPercentage(coupon.getDiscountPercentage());
-                cart.setDiscountAmount(coupon.getDiscountAmount());
+                cart.setDiscountPercentage(CouponsAndDicountCodes.codes.get(code).getDiscountPercentage());
+                cart.setDiscountAmount(CouponsAndDicountCodes.codes.get(code).getDiscountAmount());
                 cart.calculatePayableAmount();
                 System.out.println("Discount code applied successfully");
             }
@@ -188,6 +208,241 @@ public class User {
         System.out.println("--------------------------------------------------------");
     }
 
-    //need to add orders before doing the menu
-    public void userMenu(){};
+//add a review to the list of reviews of the user and the product
+    public void addReview(String productId, String review, int rating){
+        reviews.add(new Review(productId, username, review, rating));
+        productManager.findProduct(productId).addReview(new Review(productId, username, review, rating));
+    }
+
+//remove a review from the list of reviews of the user and the product
+    public void removeReview(String productId){
+        for(Review review : reviews){
+            if(review.getProductId().equals(productId)){
+                reviews.remove(review);
+                break;
+            }
+        }
+        productManager.findProduct(productId).removeReview(this.username);
+    }
+
+//view the list of reviews
+    public void viewReviews(){
+        System.out.println("------------------Reviews:------------------");
+        for(Review review : reviews){
+            System.out.println("- "+review);
+        }
+        System.out.println("---------------------------------------------");
+    }
+
+    //view the list of used coupons and discount codes
+    public void viewCouponsAndDiscountCodesUsed(){
+        System.out.println("------------------Coupons and Discount Codes Used:------------------");
+        for(String code : couponsAndDicountCodesUsed.keySet()){
+            System.out.println("- "+couponsAndDicountCodesUsed.get(code));
+        }
+        System.out.println("--------------------------------------------------------------------");
+    }
+
+    public void searchForProduct() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the product id: ");
+        String productId = scanner.nextLine();
+        Product product = productManager.findProduct(productId);
+        if (product != null) {
+            System.out.println(product);
+        }
+        else {
+            System.out.println("Product not found!");
+        }
+    }
+    public void searchByTermInNameAndDescription() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the term: ");
+        String term = scanner.nextLine();
+        productManager.searchByTermInNameAndDescription(term);
+    }
+
+    public void filterByCategory() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the category: ");
+        System.out.println("1. ElectronicProduct");
+        System.out.println("2. ClothingProduct");
+        System.out.println("3. GamingProduct");
+        System.out.println("4. AnimeMerchProduct");
+        System.out.println("5. SeriesMerchProduct");
+        System.out.println("6. HomeDecoProduct");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        switch (choice) {
+            case 1:
+                productManager.printAllProductsOfACategory(ElectronicProduct.class);
+                break;
+            case 2:
+                productManager.printAllProductsOfACategory(ClothingProduct.class);
+                break;
+            case 3:
+                productManager.printAllProductsOfACategory(GamingProduct.class);
+                break;
+            case 4:
+                productManager.printAllProductsOfACategory(AnimeMerchProduct.class);
+                break;
+            case 5:
+                productManager.printAllProductsOfACategory(SeriesMerchProduct.class);
+                break;
+            case 6:
+                productManager.printAllProductsOfACategory(HomeDecoProduct.class);
+                break;
+            default:
+                System.out.println("Invalid choice!");
+                break;
+        }
+    }
+
+    public void filterByPrice() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the min price: ");
+        float minPrice = scanner.nextFloat();
+        scanner.nextLine();
+        System.out.println("Enter the max price: ");
+        float maxPrice = scanner.nextFloat();
+        scanner.nextLine();
+        for (Product p : productManager.filterByPriceRange(minPrice, maxPrice)){
+            System.out.println("Product: " + p.getName() + " Price: " + p.getPrice());
+        }
+    }
+
+    public void filterByBrand() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the brand: ");
+        String brand = scanner.nextLine();
+        for (Product p : productManager.filterByBrand(brand)){
+            System.out.println("Product: " + p.getName() + " Brand: " + p.getBrand());
+        }
+    }
+
+    //filter by quantity range
+    public void filterByQuantity() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the min quantity: ");
+        int minQuantity = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("Enter the max quantity: ");
+        int maxQuantity = scanner.nextInt();
+        scanner.nextLine();
+        for (Product p : productManager.filterByQuantityRange(minQuantity, maxQuantity)){
+            System.out.println("ProductID: " +p.getProductId()+"\tProduct Name: "+ p.getName() + "\tQuantity: " + p.getQuantityInStock());
+        }
+    }
+
+    public static void userMenu(User user) {
+        if (user != null) {
+            //User must log in first :
+            if (user.authentificationSystem.getLoggedInUsers().containsKey(user.email)) {
+                int choice = 0;
+                while (choice != 16) {
+                    System.out.println("Welcome " + user.name + " !");
+                    System.out.println("1. View products");
+                    System.out.println("2. View cart");
+                    System.out.println("3. View order history");
+                    System.out.println("4. View reviews");
+                    System.out.println("5. View coupons and discount codes used");
+                    System.out.println("6. View profile");
+                    System.out.println("7. View all reviews of a product");
+                    System.out.println("8. Search for a product");
+                    System.out.println("9. Search by term in name and description");
+                    System.out.println("10. Filter by category");
+                    System.out.println("11. Filter by price");
+                    System.out.println("12. Filter by quantity");
+                    System.out.println("13. Add to the shopping cart");
+                    System.out.println("14. Remove from the shopping cart");
+                    System.out.println("15. Add a review on a product");
+                    System.out.println("16. Remove a review on a product");
+                    System.out.println("17. Checkout");
+                    System.out.println("18. Logout");
+                    Scanner scanner = new Scanner(System.in);
+                    choice = scanner.nextInt();
+                    switch (choice) {
+                        case 1:
+                            user.productManager.printAllProducts();
+                            break;
+                        case 2:
+                            user.viewCart();
+                            break;
+                        case 3:
+                            user.viewOrderHistory();
+                            break;
+                        case 4:
+                            user.viewReviews();
+                            break;
+                        case 5:
+                            user.viewCouponsAndDiscountCodesUsed();
+                            break;
+                        case 6:
+                            System.out.println(user);
+                            break;
+                        case 7:
+                            System.out.println("Enter the product id: ");
+                            String productId = scanner.nextLine();
+                            user.productManager.findProduct(productId).displayReviews();
+                            break;
+                        case 8:
+                            user.searchForProduct();
+                            break;
+                        case 9:
+                            user.searchByTermInNameAndDescription();
+                            break;
+                        case 10:
+                            user.filterByCategory();
+                            break;
+                        case 11:
+                            user.filterByPrice();
+                            break;
+                        case 12:
+                            user.filterByQuantity();
+                            break;
+                        case 13:
+                            System.out.println("Enter the product id: ");
+                            String productId2 = scanner.nextLine();
+                            System.out.println("Enter the quantity: ");
+                            int quantity = scanner.nextInt();
+                            user.addToCart(productId2, quantity);
+                            break;
+                        case 14:
+                            scanner.nextLine();
+                            System.out.println("Enter the product id: ");
+                            scanner.nextLine();
+                            productId = scanner.nextLine();
+                            System.out.println("Enter the quantity: ");
+                            quantity = scanner.nextInt();
+                            user.removeFromCart(productId, quantity);
+                            break;
+                        case 15:
+                            System.out.println("Enter the product id: ");
+                            String productId1 = scanner.nextLine();
+                            System.out.println("Enter the review: ");
+                            String review = scanner.nextLine();
+                            System.out.println("Enter the rating: ");
+                            int rating = scanner.nextInt();
+                            user.addReview("123", review, rating);
+                            break;
+                        case 16 :
+                            System.out.println("Enter the product id: ");
+                            productId = scanner.nextLine();
+                            user.removeReview(productId);
+                            break;
+                        case 17:
+                            user.checkout();
+                            break;
+                        case 18:
+                            user.authentificationSystem.logout(user.email);
+                            break;
+                        default:
+                            System.out.println("Invalid choice!");
+                            break;
+                    }
+                }
+            } else
+                System.out.println("You must log in first!");
+        }
+    }
 }

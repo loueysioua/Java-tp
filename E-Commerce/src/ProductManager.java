@@ -133,8 +133,8 @@ public class ProductManager {
                         break;
                     case "Price":
                         System.out.println("Enter the new price: ");
-                        input = sc.nextLine();
-                        product.setPrice(Float.parseFloat(input));
+                        float newPrice = sc.nextFloat();
+                        product.setPrice(newPrice);
                         System.out.println("Product price updated successfully");
                         break;
                     case "Quantity":

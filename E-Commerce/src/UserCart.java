@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class UserCart {
@@ -107,9 +108,6 @@ public class UserCart {
                 System.out.println("Product not added to cart. Insufficient stock");
             }
         }
-        else{
-            System.out.println("Product not found");
-        }
     }
 
 
@@ -144,7 +142,6 @@ public class UserCart {
         }
     }
 
-
     public void displayCart(){
         System.out.println("---------------------------------Displaying Cart----------------------------------");
         calculateShippingCost();
@@ -167,5 +164,10 @@ public class UserCart {
 
     public void clearCart(){
         cart.clear();
+        discountPercentage=0;
+        totalAmount = 0;
+        discountAmount = 0;
+        payableAmount = 0;
+        shippingCost = 0;
     }
 }

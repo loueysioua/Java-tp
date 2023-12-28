@@ -7,10 +7,9 @@ public class Admin {
     private String email;
     private String password;
     private String phoneNumber;
-
     private AuthentificationSystem authentificationSystem;
-
-    public Admin(ProductManager productManager, String name, String username, String email, String password, String phoneNumber, AuthentificationSystem authentificationSystem) {
+    private String adress;
+    public Admin(ProductManager productManager, String name, String username, String email, String password, String phoneNumber, AuthentificationSystem authentificationSystem , String adress) {
         this.productManager = productManager;
         this.name = name;
         this.username = username;
@@ -18,6 +17,8 @@ public class Admin {
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.authentificationSystem = authentificationSystem;
+        this.authentificationSystem.registerAdmin(this);
+        this.adress = adress;
     }
 
     public String getName() {
@@ -164,9 +165,6 @@ public class Admin {
         if (product != null) {
             System.out.println(product);
         }
-        else {
-            System.out.println("Product not found!");
-        }
     }
     public void searchByTermInNameAndDescription() {
         Scanner scanner = new Scanner(System.in);
@@ -248,13 +246,14 @@ public class Admin {
     }
 
     //create Admin Menu (Admin.java)
-    public void AdminMenu() {
+    public static void AdminMenu(Admin admin) {
         //Admin must log in first
         Scanner scanner = new Scanner(System.in);
-        if (authentificationSystem.getLoggedInAdmins().containsKey(email)) {
-            System.out.println("Welcome " + name + "!");
+        if (admin.authentificationSystem.getLoggedInAdmins().containsKey(admin.getEmail())) {
+            System.out.println("Welcome " + admin.getName() + "!");
             int choice = 0;
-            while (choice != 13) {
+            while (choice != 24) {
+                System.out.println("0. Add a coupon or a discount code");
                 System.out.println("1. Add product");
                 System.out.println("2. Remove product");
                 System.out.println("3. Update product");
@@ -282,6 +281,11 @@ public class Admin {
                 choice = scanner.nextInt();
                 scanner.nextLine();
                 switch (choice) {
+                    case 0:
+                        System.out.println("Enter the code: ");
+                        String code = scanner.nextLine();
+                        CouponsAndDicountCodes.addCode(code);
+                        break;
                     case 1: {
                         System.out.println("Enter the product id: ");
                         String productId = scanner.nextLine();
@@ -321,7 +325,7 @@ public class Admin {
                                 System.out.println("Enter the product electric power: ");
                                 String productElectricPower = scanner.nextLine();
                                 ElectronicProduct electronicProduct = new ElectronicProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productType, productColor, productWeight, productDimensions, productElectricPower);
-                                addProduct(electronicProduct);
+                                admin.addProduct(electronicProduct);
                                 break;
 
                             case 2:
@@ -332,7 +336,7 @@ public class Admin {
                                 System.out.println("Enter the product material: ");
                                 String productMaterial = scanner.nextLine();
                                 ClothingProduct clothingProduct = new ClothingProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productSize, productColor2, productMaterial);
-                                addProduct(clothingProduct);
+                                admin.addProduct(clothingProduct);
                                 break;
 
                             case 3:
@@ -347,7 +351,7 @@ public class Admin {
                                 System.out.println("Enter the product publisher: ");
                                 String productPublisher = scanner.nextLine();
                                 GamingProduct gamingProduct = new GamingProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productPlatform, productGenre, productAgeRestriction, productReleaseDate, productPublisher);
-                                addProduct(gamingProduct);
+                                admin.addProduct(gamingProduct);
                                 break;
 
                             case 4:
@@ -362,7 +366,7 @@ public class Admin {
                                 System.out.println("Enter the product anime material: ");
                                 String productAnimeMaterial = scanner.nextLine();
                                 AnimeMerchProduct animeMerchProduct = new AnimeMerchProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productAnimeName, productAnimeGenre, productAnimeType, productAnimeSize, productAnimeMaterial);
-                                addProduct(animeMerchProduct);
+                                admin.addProduct(animeMerchProduct);
                                 break;
 
                             case 5:
@@ -377,7 +381,7 @@ public class Admin {
                                 System.out.println("Enter the product series material: ");
                                 String productSeriesMaterial = scanner.nextLine();
                                 SeriesMerchProduct seriesMerchProduct = new SeriesMerchProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productSeriesName, productSeriesGenre, productSeriesType, productSeriesSize, productSeriesMaterial);
-                                addProduct(seriesMerchProduct);
+                                admin.addProduct(seriesMerchProduct);
                                 break;
 
                             case 6:
@@ -397,7 +401,7 @@ public class Admin {
                                 System.out.println("Enter the product dimensions: ");
                                 String productDimensions2 = scanner.nextLine();
                                 HomeDecoProduct homeDecoProduct = new HomeDecoProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productMaterial2, productType2, productColor3, productWeight2, productStyle, productRoom, productDimensions2);
-                                addProduct(homeDecoProduct);
+                                admin.addProduct(homeDecoProduct);
                                 break;
 
                         }
@@ -407,100 +411,109 @@ public class Admin {
                     case 2:
                         System.out.println("Enter the product id: ");
                         String productId2 = scanner.nextLine();
-                        removeProduct(productId2);
+                        admin.removeProduct(productId2);
                         break;
 
                     case 3:
                         System.out.println("Enter the product id: ");
                         String productId3 = scanner.nextLine();
-                        updateProduct(productManager.findProduct(productId3));
+                        admin.updateProduct(admin.productManager.findProduct(productId3));
                         break;
 
                     case 4:
-                        seeStock();
+                        admin.seeStock();
                         break;
 
                     case 5:
-                        seeLowStockProducts();
+                        admin.seeLowStockProducts();
                         break;
 
                     case 6:
-                        putProductOnSale();
+                        admin.putProductOnSale();
                         break;
 
                     case 7:
-                        putCategoryOnSale();
+                        admin.putCategoryOnSale();
                         break;
 
                     case 8:
-                        putAllProductsOnSale();
+                        admin.putAllProductsOnSale();
                         break;
 
                     case 9:
-                        searchForProduct();
+                        admin.searchForProduct();
                         break;
 
                     case 10:
-                        searchByTermInNameAndDescription();
+                        admin.searchByTermInNameAndDescription();
                         break;
 
                     case 11:
-                        filterByCategory();
+                        admin.filterByCategory();
                         break;
 
                     case 12:
-                        filterByPrice();
+                        admin.filterByPrice();
                         break;
 
                     case 13:
-                        filterByQuantity();
+                        admin.filterByQuantity();
                         break;
 
                     case 14:
                         System.out.println("Enter your adress: ");
                         String adress = scanner.nextLine();
-                        User user = new User(productManager, name, username, email, password, phoneNumber, adress);
+                        User user = new User(admin.authentificationSystem,admin.productManager, admin.name,admin.username, admin.email, admin.password, admin.phoneNumber, adress);
                         break;
 
                     case 15:
                         System.out.println("Enter the user email: ");
                         String userEmail = scanner.nextLine();
-                        authentificationSystem.kickUser(userEmail);
+                        admin.authentificationSystem.kickUser(userEmail);
                         break;
 
                     case 18:
                         System.out.println("Enter the admin email: ");
                         String adminEmail = scanner.nextLine();
-                        authentificationSystem.kickAdmin(adminEmail);
+                        admin.authentificationSystem.kickAdmin(adminEmail);
                         break;
 
                     case 19:
-                        authentificationSystem.viewUsers();
+                        admin.authentificationSystem.viewUsers();
                         break;
 
                     case 20:
-                        authentificationSystem.viewAdmins();
+                        admin.authentificationSystem.viewAdmins();
                         break;
 
                     case 21:
-                        authentificationSystem.viewLoggedInUsers();
+                        admin.authentificationSystem.viewLoggedInUsers();
                         break;
 
                     case 22:
-                        authentificationSystem.viewLoggedInAdmins();
+                        admin.authentificationSystem.viewLoggedInAdmins();
                         break;
 
                     case 23:
-                        authentificationSystem.login(email, password);
-                        //display the user menu:
-                        authentificationSystem.getUsers().get(email).userMenu();
+                        if(admin.authentificationSystem.findUser(admin.email) != null) {
+                            admin.authentificationSystem.login(admin.email, admin.password);
+                            //display the user menu:
+                            User.userMenu(admin.authentificationSystem.findUser(admin.email));
+                        }
+                        else {
+                            System.out.println("Register yourself as a User first!");
+                        }
                         break;
 
                     case 24:
-                        authentificationSystem.logout(email);
+                        admin.authentificationSystem.logout(admin.email);
                         break;
 
                 }
+                System.out.println("Would you like to continue? (1. y/2. n)");
+                choice = scanner.nextInt();
+                if(choice ==2)
+                    break;
             }
         } else {
             System.out.println("You must log in first!");
