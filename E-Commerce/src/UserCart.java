@@ -131,7 +131,6 @@ public class UserCart {
                 Product product = productManager.findProduct(productID);
                 product.setQuantityInStock(product.getQuantityInStock() + quantity);
                 System.out.println("Product removed from cart successfully");
-                calculateShippingCost();
             }
             else {
                 System.out.println("Product not removed from cart. Invalid quantity");
@@ -144,7 +143,6 @@ public class UserCart {
 
     public void displayCart(){
         System.out.println("---------------------------------Displaying Cart----------------------------------");
-        calculateShippingCost();
         System.out.printf("{\t%-15s|\t%-25s|\t%-10s|\t%-10s\n", "Product ID", "Product Name", "Quantity", "Price");
         //iterate through the cart and display the product ID , name and quantity
         for(String productID : cart.keySet()){

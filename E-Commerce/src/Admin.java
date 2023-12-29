@@ -267,16 +267,17 @@ public class Admin {
                 System.out.println("11. Filter by category");
                 System.out.println("12. Filter by price");
                 System.out.println("13. Filter by quantity");
+                System.out.println("14. Filter dynamically");
                 //Admins can modify the authentification system
-                System.out.println("14. Register as a user");
-                System.out.println("15. Remove user");
-                System.out.println("18. Remove admin");
-                System.out.println("19. View all users");
-                System.out.println("20. View all admins");
-                System.out.println("21. View all logged in users");
-                System.out.println("22. View all logged in admins");
-                System.out.println("23. Log in as a user");
-                System.out.println("24. Logout");
+                System.out.println("15. Register as a user");
+                System.out.println("16. Remove user");
+                System.out.println("17. Remove admin");
+                System.out.println("18. View all users");
+                System.out.println("19. View all admins");
+                System.out.println("20. View all logged in users");
+                System.out.println("21. View all logged in admins");
+                System.out.println("22. Log in as a user");
+                System.out.println("23. Logout");
                 System.out.println("Enter your choice: ");
                 choice = scanner.nextInt();
                 scanner.nextLine();
@@ -461,40 +462,46 @@ public class Admin {
                         break;
 
                     case 14:
+                        System.out.println("Enter the term: ");
+                        String term = scanner.nextLine();
+                        admin.productManager.filterByDynamicFilters();
+                        break;
+
+                    case 15:
                         System.out.println("Enter your adress: ");
                         String adress = scanner.nextLine();
                         User user = new User(admin.authentificationSystem,admin.productManager, admin.name,admin.username, admin.email, admin.password, admin.phoneNumber, adress);
                         break;
 
-                    case 15:
+                    case 16:
                         System.out.println("Enter the user email: ");
                         String userEmail = scanner.nextLine();
                         admin.authentificationSystem.kickUser(userEmail);
                         break;
 
-                    case 18:
+                    case 17:
                         System.out.println("Enter the admin email: ");
                         String adminEmail = scanner.nextLine();
                         admin.authentificationSystem.kickAdmin(adminEmail);
                         break;
 
-                    case 19:
+                    case 18:
                         admin.authentificationSystem.viewUsers();
                         break;
 
-                    case 20:
+                    case 19:
                         admin.authentificationSystem.viewAdmins();
                         break;
 
-                    case 21:
+                    case 20:
                         admin.authentificationSystem.viewLoggedInUsers();
                         break;
 
-                    case 22:
+                    case 21:
                         admin.authentificationSystem.viewLoggedInAdmins();
                         break;
 
-                    case 23:
+                    case 22:
                         if(admin.authentificationSystem.findUser(admin.email) != null) {
                             admin.authentificationSystem.login(admin.email, admin.password);
                             //display the user menu:
@@ -505,15 +512,18 @@ public class Admin {
                         }
                         break;
 
-                    case 24:
+                    case 23:
                         admin.authentificationSystem.logout(admin.email);
                         break;
 
                 }
+                if( ! admin.authentificationSystem.getLoggedInAdmins().containsKey(admin.getEmail()))
+                    break;
                 System.out.println("Would you like to continue? (1. y/2. n)");
                 choice = scanner.nextInt();
                 if(choice ==2)
                     break;
+
             }
         } else {
             System.out.println("You must log in first!");

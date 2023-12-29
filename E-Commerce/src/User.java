@@ -109,16 +109,20 @@ public class User {
         //User may enter discount codes if he has
         System.out.println("Do you have a discount code? (Y/N)");
         Scanner scanner1 = new Scanner(System.in);
-        String choice1 = scanner1.next();
+        String choice1 = scanner1.nextLine();
         if(choice1.equalsIgnoreCase("Y")){
             System.out.println("Enter your discount code:");
             Scanner scanner2 = new Scanner(System.in);
-            String code = scanner2.next();
-            if(CouponsAndDicountCodes.codes.containsKey(code)){
+            String code = scanner2.nextLine();
+            if(CouponsAndDicountCodes.codes.containsKey(code) && !couponsAndDicountCodesUsed.containsKey(code)){
                 cart.setDiscountPercentage(CouponsAndDicountCodes.codes.get(code).getDiscountPercentage());
                 cart.setDiscountAmount(CouponsAndDicountCodes.codes.get(code).getDiscountAmount());
                 cart.calculatePayableAmount();
+                couponsAndDicountCodesUsed.put(code, CouponsAndDicountCodes.codes.get(code));
                 System.out.println("Discount code applied successfully");
+            }
+            else if (couponsAndDicountCodesUsed.containsKey(code)){
+                System.out.println("Discount code already used");
             }
             else{
                 System.out.println("Invalid discount code");
@@ -145,16 +149,17 @@ public class User {
         System.out.println("3. Our Card");
         Scanner scanner = new Scanner(System.in);
         int choice = scanner.nextInt();
+        scanner.nextLine();
         switch (choice){
             case 1:
                 System.out.println("Enter your card number:");
-                String cardNumber = scanner.next();
+                String cardNumber = scanner.nextLine();
                 System.out.println("Enter the card holder name:");
-                String cardHolderName = scanner.next();
+                String cardHolderName = scanner.nextLine();
                 System.out.println("Enter the expiry date:");
-                String expiryDate = scanner.next();
+                String expiryDate = scanner.nextLine();
                 System.out.println("Enter the cvv:");
-                String cvv = scanner.next();
+                String cvv = scanner.nextLine();
                 PaymentStrat creditCardPayment = new CreditCardPayment(cardNumber, cardHolderName, expiryDate, cvv);
                 creditCardPayment.pay(payableAmount);
                 //create a new Order and add it to the order list of the user
@@ -165,7 +170,7 @@ public class User {
                 break;
             case 2:
                 System.out.println("Enter your username:");
-                String username = scanner.next();
+                String username = scanner.nextLine();
                 System.out.println("Enter your 4 digit password:");
                 int _4DigitPassword = scanner.nextInt();
                 System.out.println("Enter your 8 digit password:");
@@ -180,15 +185,15 @@ public class User {
                 break;
             case 3:
                 System.out.println("Enter your username:");
-                username = scanner.next();
+                String username1 = scanner.nextLine();
                 System.out.println("Enter your password:");
-                String password = scanner.next();
+                String password = scanner.nextLine();
                 System.out.println("Enter your card number:");
-                cardNumber = scanner.next();
-                PaymentStrat ourCardPayment = new OurCardPayment(username, password , cardNumber);
+                String cardNumber1 = scanner.nextLine();
+                PaymentStrat ourCardPayment = new OurCardPayment(username1, password , cardNumber1);
                 ourCardPayment.pay(payableAmount);
                 //create a new Order and add it to the order list of the user
-                Order orderCase3 = new Order(username, cart);
+                Order orderCase3 = new Order(username1, cart);
                 orders.put(orderCase3.getOrderID(), orderCase3);
                 cart.clearCart();
                 System.out.println("Thank you for shopping with us "+ name+" ! "+ "Your order will be delivered to "+ address+" in 3 days");
@@ -211,7 +216,9 @@ public class User {
 //add a review to the list of reviews of the user and the product
     public void addReview(String productId, String review, int rating){
         reviews.add(new Review(productId, username, review, rating));
-        productManager.findProduct(productId).addReview(new Review(productId, username, review, rating));
+        Product p = productManager.findProduct(productId);
+        if(p != null)
+            p.addReview( new Review(productId, username, review, rating) );
     }
 
 //remove a review from the list of reviews of the user and the product
@@ -339,107 +346,125 @@ public class User {
             //User must log in first :
             if (user.authentificationSystem.getLoggedInUsers().containsKey(user.email)) {
                 int choice = 0;
-                while (choice != 16) {
-                    System.out.println("Welcome " + user.name + " !");
-                    System.out.println("1. View products");
-                    System.out.println("2. View cart");
-                    System.out.println("3. View order history");
-                    System.out.println("4. View reviews");
-                    System.out.println("5. View coupons and discount codes used");
-                    System.out.println("6. View profile");
-                    System.out.println("7. View all reviews of a product");
-                    System.out.println("8. Search for a product");
-                    System.out.println("9. Search by term in name and description");
-                    System.out.println("10. Filter by category");
-                    System.out.println("11. Filter by price");
-                    System.out.println("12. Filter by quantity");
-                    System.out.println("13. Add to the shopping cart");
-                    System.out.println("14. Remove from the shopping cart");
-                    System.out.println("15. Add a review on a product");
-                    System.out.println("16. Remove a review on a product");
-                    System.out.println("17. Checkout");
-                    System.out.println("18. Logout");
-                    Scanner scanner = new Scanner(System.in);
-                    choice = scanner.nextInt();
-                    switch (choice) {
-                        case 1:
-                            user.productManager.printAllProducts();
+                while (choice >= 0 && choice <= 18) {
+                    if (user.authentificationSystem.getLoggedInUsers().containsKey(user.email)) {
+                        System.out.println("Welcome " + user.name + " !");
+                        System.out.println("1. View products");
+                        System.out.println("2. View cart");
+                        System.out.println("3. View order history");
+                        System.out.println("4. View reviews");
+                        System.out.println("5. View coupons and discount codes used");
+                        System.out.println("6. View profile");
+                        System.out.println("7. View all reviews of a product");
+                        System.out.println("8. Search for a product");
+                        System.out.println("9. Search by term in name and description");
+                        System.out.println("10. Filter by category");
+                        System.out.println("11. Filter by price");
+                        System.out.println("12. Filter by quantity");
+                        System.out.println("13. Filter dynamically");
+                        System.out.println("14. Add to the shopping cart");
+                        System.out.println("15. Remove from the shopping cart");
+                        System.out.println("16. Add a review on a product");
+                        System.out.println("17. Remove a review on a product");
+                        System.out.println("18. Checkout");
+                        System.out.println("19. Logout");
+                        Scanner scanner = new Scanner(System.in);
+                        choice = scanner.nextInt();
+                        scanner.nextLine();
+                        switch (choice) {
+                            case 1:
+                                user.productManager.printAllProducts();
+                                break;
+                            case 2:
+                                user.viewCart();
+                                break;
+                            case 3:
+                                user.viewOrderHistory();
+                                break;
+                            case 4:
+                                user.viewReviews();
+                                break;
+                            case 5:
+                                user.viewCouponsAndDiscountCodesUsed();
+                                break;
+                            case 6:
+                                System.out.println(user);
+                                break;
+                            case 7:
+                                System.out.println("Enter the product id: ");
+                                String productId = scanner.nextLine();
+                                user.productManager.findProduct(productId).displayReviews();
+                                break;
+                            case 8:
+                                user.searchForProduct();
+                                break;
+                            case 9:
+                                user.searchByTermInNameAndDescription();
+                                break;
+                            case 10:
+                                user.filterByCategory();
+                                break;
+                            case 11:
+                                user.filterByPrice();
+                                break;
+                            case 12:
+                                user.filterByQuantity();
+                                break;
+                            case 13:
+                                user.productManager.filterByDynamicFilters();
+                                break;
+                            case 14:
+                                System.out.println("Enter the product id: ");
+                                String productId2 = scanner.nextLine();
+                                System.out.println("Enter the quantity: ");
+                                int quantity = scanner.nextInt();
+                                user.addToCart(productId2, quantity);
+                                break;
+                            case 15:
+                                System.out.println("Enter the product id: ");
+                                String productId3 = scanner.nextLine();
+                                System.out.println("Enter the quantity: ");
+                                int quantity2 = scanner.nextInt();
+                                user.removeFromCart(productId3, quantity2);
+                                break;
+                            case 16:
+                                System.out.println("Enter the product id: ");
+                                String productId1 = scanner.nextLine();
+                                System.out.println("Enter the review: ");
+                                String review = scanner.nextLine();
+                                System.out.println("Enter the rating: ");
+                                int rating = scanner.nextInt();
+                                user.addReview(productId1, review, rating);
+                                scanner.nextLine();
+                                break;
+                            case 17:
+                                System.out.println("Enter the product id: ");
+                                String productId4 = scanner.nextLine();
+                                user.removeReview(productId4);
+                                break;
+                            case 18:
+                                user.checkout();
+                                break;
+                            case 19:
+                                user.authentificationSystem.logout(user.email);
+                                break;
+                            default:
+                                System.out.println("Invalid choice!");
+                                break;
+
+                        }
+                        if(choice==19)
                             break;
-                        case 2:
-                            user.viewCart();
-                            break;
-                        case 3:
-                            user.viewOrderHistory();
-                            break;
-                        case 4:
-                            user.viewReviews();
-                            break;
-                        case 5:
-                            user.viewCouponsAndDiscountCodesUsed();
-                            break;
-                        case 6:
-                            System.out.println(user);
-                            break;
-                        case 7:
-                            System.out.println("Enter the product id: ");
-                            String productId = scanner.nextLine();
-                            user.productManager.findProduct(productId).displayReviews();
-                            break;
-                        case 8:
-                            user.searchForProduct();
-                            break;
-                        case 9:
-                            user.searchByTermInNameAndDescription();
-                            break;
-                        case 10:
-                            user.filterByCategory();
-                            break;
-                        case 11:
-                            user.filterByPrice();
-                            break;
-                        case 12:
-                            user.filterByQuantity();
-                            break;
-                        case 13:
-                            System.out.println("Enter the product id: ");
-                            String productId2 = scanner.nextLine();
-                            System.out.println("Enter the quantity: ");
-                            int quantity = scanner.nextInt();
-                            user.addToCart(productId2, quantity);
-                            break;
-                        case 14:
-                            scanner.nextLine();
-                            System.out.println("Enter the product id: ");
-                            scanner.nextLine();
-                            productId = scanner.nextLine();
-                            System.out.println("Enter the quantity: ");
-                            quantity = scanner.nextInt();
-                            user.removeFromCart(productId, quantity);
-                            break;
-                        case 15:
-                            System.out.println("Enter the product id: ");
-                            String productId1 = scanner.nextLine();
-                            System.out.println("Enter the review: ");
-                            String review = scanner.nextLine();
-                            System.out.println("Enter the rating: ");
-                            int rating = scanner.nextInt();
-                            user.addReview("123", review, rating);
-                            break;
-                        case 16 :
-                            System.out.println("Enter the product id: ");
-                            productId = scanner.nextLine();
-                            user.removeReview(productId);
-                            break;
-                        case 17:
-                            user.checkout();
-                            break;
-                        case 18:
-                            user.authentificationSystem.logout(user.email);
-                            break;
-                        default:
-                            System.out.println("Invalid choice!");
-                            break;
+                        else {
+                            System.out.println("Would you like to continue? (Y/N)");
+                            String answer = scanner.nextLine();
+                            if (answer.equalsIgnoreCase("N")) {
+                                user.authentificationSystem.logout(user.email);
+                                break;
+                            }
+                        }
                     }
+
                 }
             } else
                 System.out.println("You must log in first!");

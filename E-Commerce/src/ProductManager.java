@@ -244,18 +244,22 @@ public class ProductManager {
             //filter by price
             if (input.equalsIgnoreCase("YES")){
                 System.out.println("Enter the min price: ");
-                float minPrice = Float.parseFloat(sc.nextLine());
+                float minPrice = sc.nextFloat();
+                sc.nextLine();
                 System.out.println("Enter the max price: ");
-                float maxPrice = Float.parseFloat(sc.nextLine());
+                float maxPrice = sc.nextFloat();
+                sc.nextLine();
+                System.out.println();
                 if (minPrice>=0 && maxPrice>=0) {
                     if (minPrice > maxPrice) {
                         float aux = minPrice;
                         minPrice = maxPrice;
                         maxPrice = aux;
                     }
-                    for (Product product : products) {
-                        if (product.getPrice() < minPrice || product.getPrice() > maxPrice) {
-                            products.remove(product);
+                    for (int i=0 ; i<products.size() ; i++) {
+                        if (products.get(i).getPrice() < minPrice || products.get(i).getPrice() > maxPrice) {
+                            products.remove(products.get(i));
+                            i--;
                         }
                     }
                 }
