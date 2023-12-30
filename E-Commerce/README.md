@@ -22,8 +22,9 @@ ___
 * Dynamic product filtering
 * Review and rating system
 * **Admins** :
-    * Add a new product
-    * Add a new product category(if the product category doesn't exist)
+    * Log in as an admin
+      * **Note** :Admins are added "Admin" at the end of their usernames and passwords. Admins cannot register . They must be created in the main method as objects, but before using the system admins must log in first .
+    * Add a new product from the categories that exist in the system
     * remove a product
     * update a product
     * see the stock on a product
@@ -80,6 +81,7 @@ ___
 * **Note** : If you want to test the application with your own methods , you should create a new object of the class Product Manager ,a new object of the class AuthenticationSystem and AT LEAST ONE admin if you want to log in as an admin (you can create as many admins as you want) .
 4. Call the log in method in the AuthenticationSystem class to log in as an admin or a customer (customers can be registered through the log in menu no need to create them as new objects).
 5. You are good to go ! Enjoy !
+#### **Note** : there are some inputs that are case sensitive . Please make sure to enter the right input .
 
 ## Design Decisions
 ___

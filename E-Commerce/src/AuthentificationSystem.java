@@ -132,25 +132,19 @@ public class AuthentificationSystem {
 
     //find user by email
     public User findUser(String email) {
-        if(users.containsKey(email))
-            return users.get(email);
-        else
-            return null;
+        return users.getOrDefault(email, null);
     }
 
     //find admin by email
     public Admin findAdmin(String email) {
-        if(admins.containsKey(email))
-            return admins.get(email);
-        else
-            return null;
+        return admins.getOrDefault(email, null);
     }
 
     public void changeUserPassword(String email, String oldPassword, String newPassword) {
         if(users.containsKey(email)) {
             if(users.get(email).getPassword().equals(oldPassword)) {
                 users.get(email).setPassword(newPassword);
-                System.out.println("Password changed!");
+                System.out.println("Password changed successfully!");
             }
             else
                 System.out.println("Wrong password!");
@@ -172,22 +166,30 @@ public class AuthentificationSystem {
             System.out.println("Admin does not exist!");
     }
 
-    public void changeUserEmail(String email, String newEmail) {
+    public boolean changeUserEmail(String email, String newEmail) {
         if(users.containsKey(email)) {
             users.get(email).setEmail(newEmail);
+            //change the key in the hashmap
+            users.put(newEmail, users.get(email));
             System.out.println("Email changed!");
+            return true;
         }
         else
             System.out.println("User does not exist!");
+        return false;
     }
 
-    public void changeAdminEmail(String email, String newEmail) {
+    public boolean changeAdminEmail(String email, String newEmail) {
         if(admins.containsKey(email)) {
             admins.get(email).setEmail(newEmail);
+            //change the key in the hashmap
+            admins.put(newEmail, admins.get(email));
             System.out.println("Email changed!");
+            return true;
         }
         else
             System.out.println("Admin does not exist!");
+        return false;
     }
 
     public void logout(String email) {
@@ -279,6 +281,7 @@ public class AuthentificationSystem {
                         User.userMenu(this.findUser(email));
                     }
                 }
+                break;
             case 2:
                 System.out.println("Enter your first name : ");
                 String firstName = scanner.nextLine();
@@ -295,6 +298,7 @@ public class AuthentificationSystem {
                 User user = new User(this, productManager,firstName, lastName, email1, password1, phoneNumber, address);
                 registerUser(user);
                 login(email1, password1);
+                User.userMenu(user);
                 break;
             case 3:
                 System.out.println("Goodbye!");

@@ -70,9 +70,6 @@ public class Admin {
         if (product != null) {
             productManager.removeProduct(product.getProductId(), product.getClass());
         }
-        else {
-            System.out.println("Product not found!");
-        }
     }
 
     public void updateProduct(Product product) {
@@ -245,6 +242,16 @@ public class Admin {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Admin :\n\t"+
+                "-Name : " + name + "\n\t" +
+                "-Username : " + username + "\n\t" +
+                "-Email : " + email + "\n\t" +
+                "-Password : " + password + "\n\t" +
+                "-Phone Number : " + phoneNumber + "\n\t" ;
+    }
+
     //create Admin Menu (Admin.java)
     public static void AdminMenu(Admin admin) {
         //Admin must log in first
@@ -281,7 +288,8 @@ public class Admin {
                 System.out.println("24. Change email");
                 System.out.println("25. Change phone number");
                 System.out.println("26. Change address");
-                System.out.println("27. Logout");
+                System.out.println("27. See your info");
+                System.out.println("28. Logout");
                 System.out.println("Enter your choice: ");
                 choice = scanner.nextInt();
                 scanner.nextLine();
@@ -294,123 +302,137 @@ public class Admin {
                     case 1: {
                         System.out.println("Enter the product id: ");
                         String productId = scanner.nextLine();
-                        System.out.println("Enter the product name: ");
-                        String productName = scanner.nextLine();
-                        System.out.println("Enter the product description: ");
-                        String productDescription = scanner.nextLine();
-                        System.out.println("Enter the product price: ");
-                        float productPrice = scanner.nextFloat();
-                        scanner.nextLine();
-                        System.out.println("Enter the product quantity: ");
-                        int productQuantity = scanner.nextInt();
-                        scanner.nextLine();
-                        System.out.println("Enter the product brand: ");
-                        String productBrand = scanner.nextLine();
-                        System.out.println("Enter the product category: ");
-                        System.out.println("1. ElectronicProduct");
-                        System.out.println("2. ClothingProduct");
-                        System.out.println("3. GamingProduct");
-                        System.out.println("4. AnimeMerchProduct");
-                        System.out.println("5. SeriesMerchProduct");
-                        System.out.println("6. HomeDecoProduct");
-                        int productCategory = scanner.nextInt();
-                        scanner.nextLine();
-                        //fill the rest with the fields
-                        switch (productCategory) {
-                            case 1:
-                                System.out.println("Enter the product type: ");
-                                String productType = scanner.nextLine();
-                                System.out.println("Enter the product color: ");
-                                String productColor = scanner.nextLine();
-                                System.out.println("Enter the product weight: ");
-                                String productWeight = scanner.nextLine();
-                                scanner.nextLine();
-                                System.out.println("Enter the product dimensions: ");
-                                String productDimensions = scanner.nextLine();
-                                System.out.println("Enter the product electric power: ");
-                                String productElectricPower = scanner.nextLine();
-                                ElectronicProduct electronicProduct = new ElectronicProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productType, productColor, productWeight, productDimensions, productElectricPower);
-                                admin.addProduct(electronicProduct);
-                                break;
+                        if (admin.productManager.findProduct(productId) != null) {
+                            Product p = admin.productManager.findProduct(productId);
+                            System.out.println("Product already exists!");
+                            //set quantity to add
+                            System.out.println("Enter the quantity to add: ");
+                            int quantity = scanner.nextInt();
+                            scanner.nextLine();
+                            if (quantity >= 0)
+                                p.setQuantityInStock(p.getQuantityInStock() + quantity);
+                            else
+                                System.out.println("Invalid quantity!");
+                            break;
+                        } else {
+                            System.out.println("Enter the product name: ");
+                            String productName = scanner.nextLine();
+                            System.out.println("Enter the product description: ");
+                            String productDescription = scanner.nextLine();
+                            System.out.println("Enter the product price: ");
+                            float productPrice = scanner.nextFloat();
+                            scanner.nextLine();
+                            System.out.println("Enter the product quantity: ");
+                            int productQuantity = scanner.nextInt();
+                            scanner.nextLine();
+                            System.out.println("Enter the product brand: ");
+                            String productBrand = scanner.nextLine();
+                            System.out.println("Enter the product category: ");
+                            System.out.println("1. ElectronicProduct");
+                            System.out.println("2. ClothingProduct");
+                            System.out.println("3. GamingProduct");
+                            System.out.println("4. AnimeMerchProduct");
+                            System.out.println("5. SeriesMerchProduct");
+                            System.out.println("6. HomeDecoProduct");
+                            int productCategory = scanner.nextInt();
+                            scanner.nextLine();
+                            //fill the rest with the fields
+                            switch (productCategory) {
+                                case 1:
+                                    System.out.println("Enter the product type: ");
+                                    String productType = scanner.nextLine();
+                                    System.out.println("Enter the product color: ");
+                                    String productColor = scanner.nextLine();
+                                    System.out.println("Enter the product weight: ");
+                                    String productWeight = scanner.nextLine();
+                                    scanner.nextLine();
+                                    System.out.println("Enter the product dimensions: ");
+                                    String productDimensions = scanner.nextLine();
+                                    System.out.println("Enter the product electric power: ");
+                                    String productElectricPower = scanner.nextLine();
+                                    ElectronicProduct electronicProduct = new ElectronicProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productType, productColor, productWeight, productDimensions, productElectricPower);
+                                    admin.addProduct(electronicProduct);
+                                    break;
 
-                            case 2:
-                                System.out.println("Enter the product size: ");
-                                String productSize = scanner.nextLine();
-                                System.out.println("Enter the product color: ");
-                                String productColor2 = scanner.nextLine();
-                                System.out.println("Enter the product material: ");
-                                String productMaterial = scanner.nextLine();
-                                ClothingProduct clothingProduct = new ClothingProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productSize, productColor2, productMaterial);
-                                admin.addProduct(clothingProduct);
-                                break;
+                                case 2:
+                                    System.out.println("Enter the product size: ");
+                                    String productSize = scanner.nextLine();
+                                    System.out.println("Enter the product color: ");
+                                    String productColor2 = scanner.nextLine();
+                                    System.out.println("Enter the product material: ");
+                                    String productMaterial = scanner.nextLine();
+                                    ClothingProduct clothingProduct = new ClothingProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productSize, productColor2, productMaterial);
+                                    admin.addProduct(clothingProduct);
+                                    break;
 
-                            case 3:
-                                System.out.println("Enter the product platform: ");
-                                String productPlatform = scanner.nextLine();
-                                System.out.println("Enter the product genre: ");
-                                String productGenre = scanner.nextLine();
-                                System.out.println("Enter the product age restriction: ");
-                                String productAgeRestriction = scanner.nextLine();
-                                System.out.println("Enter the product release date: ");
-                                String productReleaseDate = scanner.nextLine();
-                                System.out.println("Enter the product publisher: ");
-                                String productPublisher = scanner.nextLine();
-                                GamingProduct gamingProduct = new GamingProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productPlatform, productGenre, productAgeRestriction, productReleaseDate, productPublisher);
-                                admin.addProduct(gamingProduct);
-                                break;
+                                case 3:
+                                    System.out.println("Enter the product platform: ");
+                                    String productPlatform = scanner.nextLine();
+                                    System.out.println("Enter the product genre: ");
+                                    String productGenre = scanner.nextLine();
+                                    System.out.println("Enter the product age restriction: ");
+                                    String productAgeRestriction = scanner.nextLine();
+                                    System.out.println("Enter the product release date: ");
+                                    String productReleaseDate = scanner.nextLine();
+                                    System.out.println("Enter the product publisher: ");
+                                    String productPublisher = scanner.nextLine();
+                                    GamingProduct gamingProduct = new GamingProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productPlatform, productGenre, productAgeRestriction, productReleaseDate, productPublisher);
+                                    admin.addProduct(gamingProduct);
+                                    break;
 
-                            case 4:
-                                System.out.println("Enter the product anime name: ");
-                                String productAnimeName = scanner.nextLine();
-                                System.out.println("Enter the product anime genre: ");
-                                String productAnimeGenre = scanner.nextLine();
-                                System.out.println("Enter the product anime type: ");
-                                String productAnimeType = scanner.nextLine();
-                                System.out.println("Enter the product anime size: ");
-                                String productAnimeSize = scanner.nextLine();
-                                System.out.println("Enter the product anime material: ");
-                                String productAnimeMaterial = scanner.nextLine();
-                                AnimeMerchProduct animeMerchProduct = new AnimeMerchProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productAnimeName, productAnimeGenre, productAnimeType, productAnimeSize, productAnimeMaterial);
-                                admin.addProduct(animeMerchProduct);
-                                break;
+                                case 4:
+                                    System.out.println("Enter the product anime name: ");
+                                    String productAnimeName = scanner.nextLine();
+                                    System.out.println("Enter the product anime genre: ");
+                                    String productAnimeGenre = scanner.nextLine();
+                                    System.out.println("Enter the product anime type: ");
+                                    String productAnimeType = scanner.nextLine();
+                                    System.out.println("Enter the product anime size: ");
+                                    String productAnimeSize = scanner.nextLine();
+                                    System.out.println("Enter the product anime material: ");
+                                    String productAnimeMaterial = scanner.nextLine();
+                                    AnimeMerchProduct animeMerchProduct = new AnimeMerchProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productAnimeName, productAnimeGenre, productAnimeType, productAnimeSize, productAnimeMaterial);
+                                    admin.addProduct(animeMerchProduct);
+                                    break;
 
-                            case 5:
-                                System.out.println("Enter the product series name: ");
-                                String productSeriesName = scanner.nextLine();
-                                System.out.println("Enter the product series genre: ");
-                                String productSeriesGenre = scanner.nextLine();
-                                System.out.println("Enter the product series type: ");
-                                String productSeriesType = scanner.nextLine();
-                                System.out.println("Enter the product series size: ");
-                                String productSeriesSize = scanner.nextLine();
-                                System.out.println("Enter the product series material: ");
-                                String productSeriesMaterial = scanner.nextLine();
-                                SeriesMerchProduct seriesMerchProduct = new SeriesMerchProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productSeriesName, productSeriesGenre, productSeriesType, productSeriesSize, productSeriesMaterial);
-                                admin.addProduct(seriesMerchProduct);
-                                break;
+                                case 5:
+                                    System.out.println("Enter the product series name: ");
+                                    String productSeriesName = scanner.nextLine();
+                                    System.out.println("Enter the product series genre: ");
+                                    String productSeriesGenre = scanner.nextLine();
+                                    System.out.println("Enter the product series type: ");
+                                    String productSeriesType = scanner.nextLine();
+                                    System.out.println("Enter the product series size: ");
+                                    String productSeriesSize = scanner.nextLine();
+                                    System.out.println("Enter the product series material: ");
+                                    String productSeriesMaterial = scanner.nextLine();
+                                    SeriesMerchProduct seriesMerchProduct = new SeriesMerchProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productSeriesName, productSeriesGenre, productSeriesType, productSeriesSize, productSeriesMaterial);
+                                    admin.addProduct(seriesMerchProduct);
+                                    break;
 
-                            case 6:
-                                System.out.println("Enter the product material: ");
-                                String productMaterial2 = scanner.nextLine();
-                                System.out.println("Enter the product type: ");
-                                String productType2 = scanner.nextLine();
-                                System.out.println("Enter the product color: ");
-                                String productColor3 = scanner.nextLine();
-                                System.out.println("Enter the product weight: ");
-                                String productWeight2 = scanner.nextLine();
-                                scanner.nextLine();
-                                System.out.println("Enter the product style: ");
-                                String productStyle = scanner.nextLine();
-                                System.out.println("Enter the product room: ");
-                                String productRoom = scanner.nextLine();
-                                System.out.println("Enter the product dimensions: ");
-                                String productDimensions2 = scanner.nextLine();
-                                HomeDecoProduct homeDecoProduct = new HomeDecoProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productMaterial2, productType2, productColor3, productWeight2, productStyle, productRoom, productDimensions2);
-                                admin.addProduct(homeDecoProduct);
-                                break;
+                                case 6:
+                                    System.out.println("Enter the product material: ");
+                                    String productMaterial2 = scanner.nextLine();
+                                    System.out.println("Enter the product type: ");
+                                    String productType2 = scanner.nextLine();
+                                    System.out.println("Enter the product color: ");
+                                    String productColor3 = scanner.nextLine();
+                                    System.out.println("Enter the product weight: ");
+                                    String productWeight2 = scanner.nextLine();
+                                    scanner.nextLine();
+                                    System.out.println("Enter the product style: ");
+                                    String productStyle = scanner.nextLine();
+                                    System.out.println("Enter the product room: ");
+                                    String productRoom = scanner.nextLine();
+                                    System.out.println("Enter the product dimensions: ");
+                                    String productDimensions2 = scanner.nextLine();
+                                    HomeDecoProduct homeDecoProduct = new HomeDecoProduct(productId, productName, productDescription, productPrice, productQuantity, productBrand, productMaterial2, productType2, productColor3, productWeight2, productStyle, productRoom, productDimensions2);
+                                    admin.addProduct(homeDecoProduct);
+                                    break;
 
+                            }
+                            break;
                         }
-                        break;
                     }
 
                     case 2:
@@ -422,7 +444,8 @@ public class Admin {
                     case 3:
                         System.out.println("Enter the product id: ");
                         String productId3 = scanner.nextLine();
-                        admin.updateProduct(admin.productManager.findProduct(productId3));
+                        if(admin.productManager.findProduct(productId3) != null)
+                            admin.updateProduct(admin.productManager.findProduct(productId3));
                         break;
 
                     case 4:
@@ -527,7 +550,8 @@ public class Admin {
                     case 24:
                         System.out.println("Enter your new email: ");
                         String newEmail = scanner.nextLine();
-                        admin.authentificationSystem.changeAdminEmail(admin.email, newEmail);
+                        if(admin.authentificationSystem.changeAdminEmail(admin.email, newEmail))
+                            admin.email = newEmail;
                         break;
 
                     case 25:
@@ -540,15 +564,26 @@ public class Admin {
                         admin.adress = scanner.nextLine();
                         break;
 
-                    case 27:
+                    case 27 :
+                        System.out.println("-------------Here is your info:-------------");
+                        System.out.println(admin);
+                        System.out.println("--------------------------------------------");
+                        break;
+
+                    case 28:
                         admin.authentificationSystem.logout(admin.email);
+                        System.out.println("You have been logged out!");
                         break;
 
                 }
-                if( ! admin.authentificationSystem.getLoggedInAdmins().containsKey(admin.getEmail()))
+                if( ! admin.authentificationSystem.getLoggedInAdmins().containsKey(admin.getEmail())) {
+                    admin.authentificationSystem.login(admin.email, admin.password);
+                }
+                if(choice == 28)
                     break;
                 System.out.println("Would you like to continue? (1. y/2. n)");
                 choice = scanner.nextInt();
+                scanner.nextLine();
                 if(choice ==2)
                     break;
 

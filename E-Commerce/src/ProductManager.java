@@ -138,6 +138,7 @@ public class ProductManager {
                     case "Price":
                         System.out.println("Enter the new price: ");
                         float newPrice = sc.nextFloat();
+                        sc.nextLine();
                         product.setPrice(newPrice);
                         System.out.println("Product price updated successfully");
                         break;
@@ -193,6 +194,12 @@ public class ProductManager {
     public void putOnSaleAProduct(String productId, float discount) {
         Product product = findProduct(productId);
         if (product != null) {
+            if(discount > 100){
+                discount = 100;
+            }
+            else if(discount < 0){
+                discount = 0;
+            }
             product.setPrice(product.getPrice() * (100 - discount) / 100);
             System.out.println("Product " + product.getProductId() + " is now on sale with a discount of " + discount + "%");
         }
@@ -429,7 +436,8 @@ public class ProductManager {
                                         case "HomeDecoProduct" -> HomeDecoProduct.class;
                                         default -> null;
                                     };
-                                    products.removeIf(product -> product.getClass() != productClass);
+                                    if(productClass!=null)
+                                        products.removeIf(product -> product.getClass() != productClass);
                                     System.out.println("---------------Displaying Products------------------");
                                     System.out.println("Products in the price range: " + minPrice + " - " + maxPrice + " and quantity range: " + minQuantity + " - " + maxQuantity + " and category: " + productClass.getSimpleName() + "\n\tProduct ID \t|\tProduct Name\t|\tProduct Price\t|\tProduct Quantity");
                                     for (Product product : products) {
