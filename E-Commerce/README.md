@@ -5,7 +5,7 @@ This project is a Java console application that simulates an e-commerce website 
 It has many features such as: user authentication, product management, shopping cart, order management, etc.
 # Table of Contents
 1. [Features](#features)
-2. [How to use ](#How to use)
+2. [How to use](#how-to-use)
 3. [Design Decesions](#design-decisions)
 4. [class Diagram](#class-diagram)
 5. [the two optional features](#the-two-optional-features)
@@ -70,7 +70,7 @@ The search for a product is case-sensitive . Admins are the only ones who can ma
     * See the payment method
 * **Note** : the search for a product is case-sensitive . The orders of a user are created when he pays for his shopping cart . once a user object created it's added to the authentication system class .
   
-## How to use 
+## How to use
 ___
 1. Clone the repository
 2. Open the project in your IDE
