@@ -146,6 +146,50 @@ public class AuthentificationSystem {
             return null;
     }
 
+    public void changeUserPassword(String email, String oldPassword, String newPassword) {
+        if(users.containsKey(email)) {
+            if(users.get(email).getPassword().equals(oldPassword)) {
+                users.get(email).setPassword(newPassword);
+                System.out.println("Password changed!");
+            }
+            else
+                System.out.println("Wrong password!");
+        }
+        else
+            System.out.println("User does not exist!");
+    }
+
+    public void changeAdminPassword(String email, String oldPassword, String newPassword) {
+        if(admins.containsKey(email)) {
+            if(admins.get(email).getPassword().equals(oldPassword)) {
+                admins.get(email).setPassword(newPassword+"Admin");
+                System.out.println("Password changed!");
+            }
+            else
+                System.out.println("Wrong password!");
+        }
+        else
+            System.out.println("Admin does not exist!");
+    }
+
+    public void changeUserEmail(String email, String newEmail) {
+        if(users.containsKey(email)) {
+            users.get(email).setEmail(newEmail);
+            System.out.println("Email changed!");
+        }
+        else
+            System.out.println("User does not exist!");
+    }
+
+    public void changeAdminEmail(String email, String newEmail) {
+        if(admins.containsKey(email)) {
+            admins.get(email).setEmail(newEmail);
+            System.out.println("Email changed!");
+        }
+        else
+            System.out.println("Admin does not exist!");
+    }
+
     public void logout(String email) {
         if(loggedInUsers.containsKey(email)) {
             loggedInUsers.remove(email);
@@ -212,5 +256,53 @@ public class AuthentificationSystem {
         viewLoggedInAdmins();
     }
 
+    public void openMenu(){
+        System.out.println("---------------Welcome to our online shop!---------------");
+        System.out.println("1. Login");
+        System.out.println("2. Register");
+        System.out.println("3. Exit");
+        Scanner scanner = new Scanner(System.in);
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        switch (choice) {
+            case 1:
+                System.out.println("Enter your email : ");
+                String email = scanner.nextLine();
+                System.out.println("Enter your password : ");
+                String password = scanner.nextLine();
+                if( this.login(email, password) ){
+                    if (this.findAdmin(email) != null) {
+                        Admin admin1 = this.findAdmin(email);
+                        Admin.AdminMenu(admin1);
+                    }
+                    else if (this.findUser(email) != null){
+                        User.userMenu(this.findUser(email));
+                    }
+                }
+            case 2:
+                System.out.println("Enter your first name : ");
+                String firstName = scanner.nextLine();
+                System.out.println("Enter your last name : ");
+                String lastName = scanner.nextLine();
+                System.out.println("Enter your email : ");
+                String email1 = scanner.nextLine();
+                System.out.println("Enter your password : ");
+                String password1 = scanner.nextLine();
+                System.out.println("Enter your phone number : ");
+                String phoneNumber = scanner.nextLine();
+                System.out.println("Enter your address : ");
+                String address = scanner.nextLine();
+                User user = new User(this, productManager,firstName, lastName, email1, password1, phoneNumber, address);
+                registerUser(user);
+                login(email1, password1);
+                break;
+            case 3:
+                System.out.println("Goodbye!");
+                break;
+            default:
+                System.out.println("Wrong choice!");
+                break;
+        }
+    }
 
 }

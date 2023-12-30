@@ -20,20 +20,7 @@ public class Main {
         admin.addProduct(seriesMerchProduct);
         admin.addProduct(homeDecoProduct);
         //register or login :
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter your email : ");
-        String email = scanner.nextLine();
-        System.out.println("Enter your password : ");
-        String password = scanner.nextLine();
-        if( authentificationSystem.login(email, password) ){
-            if (authentificationSystem.findAdmin(email) != null) {
-                Admin admin1 = authentificationSystem.findAdmin(email);
-                Admin.AdminMenu(admin1);
-            }
-            else if (authentificationSystem.findUser(email) != null){
-                User.userMenu(authentificationSystem.findUser(email));
-            }
-        }
+        authentificationSystem.openMenu();
 
 
 //        user.addToCart("123", 1);

@@ -12,9 +12,9 @@ public class Admin {
     public Admin(ProductManager productManager, String name, String username, String email, String password, String phoneNumber, AuthentificationSystem authentificationSystem , String adress) {
         this.productManager = productManager;
         this.name = name;
-        this.username = username;
+        this.username = username+"Admin";
         this.email = email;
-        this.password = password;
+        this.password = password+"Admin";
         this.phoneNumber = phoneNumber;
         this.authentificationSystem = authentificationSystem;
         this.authentificationSystem.registerAdmin(this);
@@ -277,7 +277,11 @@ public class Admin {
                 System.out.println("20. View all logged in users");
                 System.out.println("21. View all logged in admins");
                 System.out.println("22. Log in as a user");
-                System.out.println("23. Logout");
+                System.out.println("23. Change password");
+                System.out.println("24. Change email");
+                System.out.println("25. Change phone number");
+                System.out.println("26. Change address");
+                System.out.println("27. Logout");
                 System.out.println("Enter your choice: ");
                 choice = scanner.nextInt();
                 scanner.nextLine();
@@ -513,6 +517,30 @@ public class Admin {
                         break;
 
                     case 23:
+                        System.out.println("Enter your old password: ");
+                        String oldPassword = scanner.nextLine();
+                        System.out.println("Enter your new password: ");
+                        String newPassword = scanner.nextLine();
+                        admin.authentificationSystem.changeAdminPassword(admin.email, oldPassword, newPassword);
+                        break;
+
+                    case 24:
+                        System.out.println("Enter your new email: ");
+                        String newEmail = scanner.nextLine();
+                        admin.authentificationSystem.changeAdminEmail(admin.email, newEmail);
+                        break;
+
+                    case 25:
+                        System.out.println("Enter your new phone number: ");
+                        admin.phoneNumber= scanner.nextLine();
+                        break;
+
+                    case 26:
+                        System.out.println("Enter your new address: ");
+                        admin.adress = scanner.nextLine();
+                        break;
+
+                    case 27:
                         admin.authentificationSystem.logout(admin.email);
                         break;
 

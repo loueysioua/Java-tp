@@ -23,7 +23,11 @@ public class ProductManager {
     public void addProduct(Product product) {
         if (categoryProductMap.get(product.getClass()).containsKey(product.getProductId()))
             categoryProductMap.get(product.getClass()).get(product.getProductId()).addQuantityInStock(product.getQuantityInStock());
-        categoryProductMap.get(product.getClass()).put(product.getProductId(), product);
+        else {
+            categoryProductMap.put(product.getClass(), new HashMap<>());
+            categoryProductMap.get(product.getClass()).put(product.getProductId(), product);
+            System.out.println("Product " + product.getProductId() + " added successfully to the category: " + product.getClass().getSimpleName() + "\n");
+        }
     }
     //remove a product from the hashmap if the category exists and the product exists in the category
     //else if the product doesn't exist in the category, print a message

@@ -10,6 +10,7 @@ public class User {
     private UserCart cart ;
     private String name;
     private String username;
+    private PaymentStrat paymentStrat;
     private String email;
     private String password;
     private String address;
@@ -17,7 +18,7 @@ public class User {
 
     private ProductManager productManager;
 
-    public User( AuthentificationSystem authentificationSystem,ProductManager productManager,String name, String username, String email, String password, String address , String phoneNumber) {
+    public User( AuthentificationSystem authentificationSystem,ProductManager productManager,String name, String username, String email, String password, String address , String phoneNumber ) {
         this.authentificationSystem = authentificationSystem;
         this.productManager = productManager;
         this.couponsAndDicountCodesUsed = new HashMap<>();
@@ -147,6 +148,7 @@ public class User {
         System.out.println("1. Credit Card");
         System.out.println("2. E-dinar");
         System.out.println("3. Our Card");
+        System.out.println("4. Gift Card");
         Scanner scanner = new Scanner(System.in);
         int choice = scanner.nextInt();
         scanner.nextLine();
@@ -170,12 +172,12 @@ public class User {
                 break;
             case 2:
                 System.out.println("Enter your username:");
-                String username = scanner.nextLine();
+                String username3 = scanner.nextLine();
                 System.out.println("Enter your 4 digit password:");
                 int _4DigitPassword = scanner.nextInt();
                 System.out.println("Enter your 8 digit password:");
                 int _8DigitPassword = scanner.nextInt();
-                PaymentStrat e_dinarPayment = new E_dinarPayment(username, _4DigitPassword, _8DigitPassword);
+                PaymentStrat e_dinarPayment = new E_dinarPayment(username3, _4DigitPassword, _8DigitPassword);
                 e_dinarPayment.pay(payableAmount);
                 //create a new Order and add it to the order list of the user
                 Order orderCase2 = new Order(username, cart);
@@ -193,8 +195,22 @@ public class User {
                 PaymentStrat ourCardPayment = new OurCardPayment(username1, password , cardNumber1);
                 ourCardPayment.pay(payableAmount);
                 //create a new Order and add it to the order list of the user
-                Order orderCase3 = new Order(username1, cart);
+                Order orderCase3 = new Order(username, cart);
                 orders.put(orderCase3.getOrderID(), orderCase3);
+                cart.clearCart();
+                System.out.println("Thank you for shopping with us "+ name+" ! "+ "Your order will be delivered to "+ address+" in 3 days");
+                break;
+
+            case 4:
+                System.out.println("Enter your gift card code:");
+                String code = scanner.nextLine();
+                System.out.println("Enter your gift card amount:");
+                double amount = scanner.nextDouble();
+                PaymentStrat giftCardPayment = new GiftCard(code, amount);
+                giftCardPayment.pay(payableAmount);
+                //create a new Order and add it to the order list of the user
+                Order orderCase4 = new Order(username, cart);
+                orders.put(orderCase4.getOrderID(), orderCase4);
                 cart.clearCart();
                 System.out.println("Thank you for shopping with us "+ name+" ! "+ "Your order will be delivered to "+ address+" in 3 days");
                 break;
@@ -217,8 +233,10 @@ public class User {
     public void addReview(String productId, String review, int rating){
         reviews.add(new Review(productId, username, review, rating));
         Product p = productManager.findProduct(productId);
-        if(p != null)
-            p.addReview( new Review(productId, username, review, rating) );
+        if(p != null) {
+            p.addReview(new Review(productId, username, review, rating));
+            p.calculateRating();
+        }
     }
 
 //remove a review from the list of reviews of the user and the product
@@ -367,7 +385,12 @@ public class User {
                         System.out.println("16. Add a review on a product");
                         System.out.println("17. Remove a review on a product");
                         System.out.println("18. Checkout");
-                        System.out.println("19. Logout");
+                        System.out.println("19. Change password");
+                        System.out.println("20. change username");
+                        System.out.println("21. change email");
+                        System.out.println("22. change address");
+                        System.out.println("23. change phone number");
+                        System.out.println("24. Logout");
                         Scanner scanner = new Scanner(System.in);
                         choice = scanner.nextInt();
                         scanner.nextLine();
@@ -446,6 +469,32 @@ public class User {
                                 user.checkout();
                                 break;
                             case 19:
+                                System.out.println("Enter your old password: ");
+                                String oldPassword = scanner.nextLine();
+                                user.authentificationSystem.changeUserPassword(user.email, oldPassword, user.password);
+                                break;
+                            case 20:
+                                System.out.println("Enter your new username: ");
+                                user.username = scanner.nextLine();
+                                System.out.println("Username changed successfully!");
+                                break;
+                            case 21:
+                                System.out.println("Enter your new email: ");
+                                String newEmail = scanner.nextLine();
+                                if(user.authentificationSystem.findUser(newEmail) == null)
+                                    user.authentificationSystem.changeUserEmail(user.email, newEmail);
+                                break;
+                            case 22:
+                                System.out.println("Enter your new address: ");
+                                user.address = scanner.nextLine();
+                                System.out.println("Address changed successfully!");
+                                break;
+                            case 23:
+                                System.out.println("Enter your new phone number: ");
+                                user.phoneNumber = scanner.nextLine();
+                                System.out.println("Phone number changed successfully!");
+                                break;
+                            case 24:
                                 user.authentificationSystem.logout(user.email);
                                 break;
                             default:
@@ -453,7 +502,7 @@ public class User {
                                 break;
 
                         }
-                        if(choice==19)
+                        if(choice==24)
                             break;
                         else {
                             System.out.println("Would you like to continue? (Y/N)");
